@@ -1,0 +1,19 @@
+Connecting to DB...
+Connected to DB
+Found 1 products with variants.
+
+Product: 3 Seater Sofa
+Variants structure: [
+  {
+    "type": "1 Seater",
+    "price": 18545
+  },
+  {
+    "type": "2 Seater",
+    "price": 42000
+  },
+  {
+    "type": "3 Seater",
+    "price": 56499
+  }
+]
