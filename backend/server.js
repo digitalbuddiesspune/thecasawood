@@ -30,6 +30,14 @@ const app = express();
 const allowedOrigins = [
   "http://localhost:5173",
   "http://127.0.0.1:5173",
+  "https://casawood.com",
+  "https://www.casawood.com",
+  "https://api.casawood.com",
+  "https://www.api.casawood.com",
+  "https://admin.casawood.com",
+  "https://www.admin.casawood.com",
+  "https://admin.api.casawood.com",
+  "https://www.admin.api.casawood.com",
   ...(process.env.FRONTEND_URL ? [process.env.FRONTEND_URL] : [])
 ];
 // In development, allow any localhost/127.0.0.1 origin (Vite may use different port)
