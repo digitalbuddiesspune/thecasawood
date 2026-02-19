@@ -7,7 +7,12 @@
   "type": "module",
   "scripts": {
     "start": "nodemon server.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "seed:sofa": "node scripts/seedSofaProducts.js",
+    "seed:mongo-sofa": "node scripts/seedMongoSofaDocuments.js",
+    "seed:fabric-grouped": "node scripts/seedFabricGroupedProducts.js",
+    "seed:beds": "node scripts/seedGroupedBeds.js",
+    "seed:lounge-chairs": "node scripts/seedLoungeChairs.js"
   },
   "engines": {
     "node": ">=18"
