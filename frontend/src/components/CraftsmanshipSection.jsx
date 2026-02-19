@@ -83,7 +83,7 @@ const CraftsmanshipSection = () => {
                                     className="w-full h-56 object-cover rounded-sm opacity-90 hover:opacity-100 transition-opacity"
                                 />
                                 <div className="bg-[#5c4033] p-5 rounded-sm border border-[#8b5e3c]/20">
-                                    <div className="text-3xl font-bold text-[#a67c52] mb-1">10+</div>
+                                    <div className="text-3xl font-bold text-[#a67c52] mb-1">1+</div>
                                     <div className="text-sm text-gray-300">Years Warranty on <br />Structural Integrity</div>
                                 </div>
                             </div>

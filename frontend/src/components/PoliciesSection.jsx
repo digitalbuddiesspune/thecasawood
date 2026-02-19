@@ -3,12 +3,11 @@ const PoliciesSection = () => {
         {
             icon: (
                 <svg className="w-12 h-12 text-gray-600" viewBox="0 0 24 24" fill="currentColor">
-                    <text x="50%" y="45%" dominantBaseline="middle" textAnchor="middle" fontSize="11" fontWeight="bold">3.2</text>
-                    <text x="50%" y="75%" dominantBaseline="middle" textAnchor="middle" fontSize="8">Mn</text>
+                    <text x="50%" y="50%" dominantBaseline="middle" textAnchor="middle" fontSize="12" fontWeight="bold">5k</text>
                 </svg>
             ),
-            title: '3.2 Million',
-            subtitle: 'Happy Customers'
+            title: '5k',
+            subtitle: 'happy customers'
         },
         {
             icon: (
@@ -18,18 +17,18 @@ const PoliciesSection = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222" />
                 </svg>
             ),
-            title: '4 Decades',
-            subtitle: 'Experience'
+            title: '5 years',
+            subtitle: 'of experience'
         },
         {
             icon: (
                 <svg className="w-12 h-12 text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    <text x="50%" y="55%" dominantBaseline="middle" textAnchor="middle" fontSize="10" fontWeight="bold" fill="currentColor">5</text>
+                    <text x="50%" y="55%" dominantBaseline="middle" textAnchor="middle" fontSize="10" fontWeight="bold" fill="currentColor">1</text>
                 </svg>
             ),
-            title: 'Unmatched',
-            subtitle: '5 Years Warranty'
+            title: '1 Years',
+            subtitle: 'Warranty'
         },
         {
             icon: (
@@ -49,15 +48,6 @@ const PoliciesSection = () => {
             title: 'Free',
             subtitle: 'Installation'
         },
-        {
-            icon: (
-                <svg className="w-12 h-12 text-gray-600" viewBox="0 0 24 24" fill="currentColor">
-                    <text x="50%" y="60%" dominantBaseline="middle" textAnchor="middle" fontSize="18" fontWeight="bold">0%</text>
-                </svg>
-            ),
-            title: 'EMIs On',
-            subtitle: 'Furniture'
-        }
     ]
 
     return (
@@ -72,7 +62,7 @@ const PoliciesSection = () => {
                 </div>
 
                 {/* Policies Grid */}
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6 md:gap-8">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 sm:gap-6 md:gap-8">
                     {policies.map((policy, index) => (
                         <div key={index} className="flex flex-col items-center text-center px-2 sm:px-0 transition-transform duration-300 hover:scale-110 cursor-pointer">
                             {/* Icon */}

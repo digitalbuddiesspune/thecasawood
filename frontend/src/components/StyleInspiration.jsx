@@ -44,11 +44,11 @@ const StyleInspiration = () => {
 
                         <div className="mt-12 grid grid-cols-3 gap-8 border-t border-gray-200 pt-8">
                             <div>
-                                <h3 className="text-3xl font-bold text-[#8b5e3c]">500+</h3>
+                                <h3 className="text-3xl font-bold text-[#8b5e3c]">100+</h3>
                                 <p className="text-sm text-gray-500 mt-1">Premium Products</p>
                             </div>
                             <div>
-                                <h3 className="text-3xl font-bold text-[#8b5e3c]">15k+</h3>
+                                <h3 className="text-3xl font-bold text-[#8b5e3c]">5k+</h3>
                                 <p className="text-sm text-gray-500 mt-1">Happy Customers</p>
                             </div>
                             <div>

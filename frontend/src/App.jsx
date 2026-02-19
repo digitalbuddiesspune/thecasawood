@@ -20,6 +20,10 @@ const Login = lazy(() => import('./pages/Login'))
 const Signup = lazy(() => import('./pages/Signup'))
 const OrderSuccess = lazy(() => import('./pages/OrderSuccess'))
 const Orders = lazy(() => import('./pages/Orders'))
+const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'))
+const TermsConditions = lazy(() => import('./pages/TermsConditions'))
+const RefundPolicy = lazy(() => import('./pages/RefundPolicy'))
+const ShippingPolicy = lazy(() => import('./pages/ShippingPolicy'))
 
 // Admin pages
 const AdminLayout = lazy(() => import('./admin/components/AdminLayout'))
@@ -65,6 +69,10 @@ const AppContent = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/order-success/:id" element={<OrderSuccess />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/terms" element={<TermsConditions />} />
+          <Route path="/refund" element={<RefundPolicy />} />
+          <Route path="/shipping" element={<ShippingPolicy />} />
 
           {/* Admin Routes */}
           <Route path="/admin" element={<AdminLayout />}>
