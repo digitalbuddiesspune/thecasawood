@@ -13,7 +13,6 @@ import wishlistRoutes from "./routes/wishlist.js";
 import orderRoutes from "./routes/orders.js";
 import addressRoutes from "./routes/addresses.js";
 import userRoutes from "./routes/users.js";
-import paymentRoutes from "./routes/payment.js";
 import fabricRoutes from "./routes/fabrics.js";
 import categoriesRoutes from "./routes/categories.js";
 import adminRoutes from "./routes/admin.js";
@@ -22,11 +21,6 @@ dotenv.config();
 
 const app = express();
 
-/* ==============================
-   Middleware
-============================== */
-
-// CORS first so all responses (including errors) get CORS headers
 const allowedOrigins = [
   "http://localhost:5173",
   "http://127.0.0.1:5173",
@@ -103,7 +97,6 @@ app.use("/api/wishlist", wishlistRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/addresses", addressRoutes);
 app.use("/api/users", userRoutes);
-app.use("/api/payment", paymentRoutes);
 app.use("/api/fabrics", fabricRoutes);
 app.use("/api/categories", categoriesRoutes);
 app.use("/api/admin", adminRoutes);

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { addressesAPI, cartAPI, paymentAPI, ordersAPI } from '../services/api'
+import { addressesAPI, cartAPI, ordersAPI } from '../services/api'
 import { useAuth } from '../context/AuthContext'
 
 const Address = () => {
@@ -204,112 +204,19 @@ const Address = () => {
     }
 
     // ==========================================
-    // 4. Payment Handlers
+    // 4. Place Order (COD)
     // ==========================================
-    const loadRazorpayScript = () => {
-        return new Promise((resolve) => {
-            const script = document.createElement('script')
-            script.src = 'https://checkout.razorpay.com/v1/checkout.js'
-            script.onload = () => resolve(true)
-            script.onerror = () => resolve(false)
-            document.body.appendChild(script)
-        })
-    }
-
-    const handleOnlinePayment = async () => {
+    const handlePlaceOrder = async () => {
         if (!selectedAddressId) {
             alert('Please select a delivery address first')
             return
         }
-
-        const isScriptLoaded = await loadRazorpayScript()
-        if (!isScriptLoaded) {
-            alert('Razorpay SDK failed to load. Please check your internet connection.')
-            return
-        }
-
-        try {
-            setProcessing(true)
-
-            // Step 1: Create Order on Backend
-            const { data: { key } } = await paymentAPI.getKey()
-            const { data: orderData } = await paymentAPI.createOrder({
-                shippingAddressId: selectedAddressId,
-                billingAddressId: selectedAddressId
-            })
-
-            if (!orderData.success) throw new Error('Failed to create order')
-
-            // Step 2: Initialize Razorpay
-            const options = {
-                key: key,
-                amount: orderData.order.amount,
-                currency: "INR",
-                name: "The Casawood",
-                description: "Furniture Purchase",
-                image: "https://thecasawood.com/logo.png",
-                order_id: orderData.order.id,
-                handler: async function (response) {
-                    try {
-                        // Step 3: Verify Payment on Backend
-                        const verifyData = {
-                            razorpay_order_id: response.razorpay_order_id,
-                            razorpay_payment_id: response.razorpay_payment_id,
-                            razorpay_signature: response.razorpay_signature,
-                            shippingAddressId: selectedAddressId,
-                            billingAddressId: selectedAddressId
-                        }
-
-                        const { data: result } = await paymentAPI.verify(verifyData)
-
-                        if (result.success) {
-                            window.dispatchEvent(new Event('cartUpdated'))
-                            navigate(`/order-success/${result.data._id}`)
-                        } else {
-                            alert('Payment verification failed')
-                        }
-                    } catch (error) {
-                        console.error('Payment verification error:', error)
-                        alert('Payment verification failed. Please contact support.')
-                    }
-                },
-                prefill: {
-                    name: user?.name,
-                    email: user?.email,
-                    contact: user?.phone
-                },
-                theme: { color: "#8b5e3c" },
-                modal: {
-                    ondismiss: () => {
-                        alert('Payment cancelled')
-                        setProcessing(false)
-                    }
-                }
-            }
-
-            const razorpayInstance = new window.Razorpay(options)
-            razorpayInstance.open()
-
-        } catch (error) {
-            console.error('Payment initialization error:', error)
-            alert(error.response?.data?.message || 'Payment initialization failed')
-            setProcessing(false)
-        }
-    }
-
-    const handleCODPayment = async () => {
-        if (!selectedAddressId) {
-            alert('Please select a delivery address first')
-            return
-        }
-
         try {
             setProcessing(true)
             const response = await ordersAPI.create({
                 shippingAddressId: selectedAddressId,
                 paymentMethod: 'COD'
             })
-
             if (response.data.success) {
                 window.dispatchEvent(new Event('cartUpdated'))
                 navigate(`/order-success/${response.data.data._id}`)
@@ -497,62 +404,24 @@ const Address = () => {
                             </div>
                         </section>
 
-                        {/* ---------------- STEP 2: PAYMENT ---------------- */}
+                        {/* ---------------- STEP 2: PLACE ORDER ---------------- */}
                         <section className={`bg-white rounded-lg shadow-sm border border-gray-100 transition-opacity ${!selectedAddressId ? 'opacity-50 pointer-events-none grayscale' : 'opacity-100'}`}>
                             <div className="bg-gray-50 px-6 py-4 border-b border-gray-100">
                                 <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
                                     <span className="flex items-center justify-center w-6 h-6 bg-[#8b5e3c] text-white text-xs rounded-full">2</span>
-                                    Payment Method
+                                    Place Order
                                 </h2>
                             </div>
 
                             <div className="p-6">
                                 {!selectedAddressId && <p className="text-sm text-red-500 mb-4">* Select an address above to proceed</p>}
-
-                                <div className="space-y-4">
-                                    {/* Razorpay Option */}
-                                    <div className="border border-gray-200 rounded-lg p-4 hover:border-[#8b5e3c] transition-colors">
-                                        <div className="flex items-center justify-between mb-3">
-                                            <div className="flex items-center gap-3">
-                                                <input type="radio" name="payment" id="online" defaultChecked className="text-[#8b5e3c] focus:ring-[#8b5e3c] w-5 h-5" />
-                                                <label htmlFor="online" className="font-semibold text-gray-800 cursor-pointer">Online Payment</label>
-                                            </div>
-                                            <div className="flex space-x-2">
-                                                <img src="https://cdn.razorpay.com/static/assets/logo/payment_methods.svg" alt="Payment Methods" className="h-5 opacity-70" />
-                                            </div>
-                                        </div>
-                                        <p className="text-xs text-gray-500 ml-8 mb-4">Pay securely using Credit/Debit Card, UPI, NetBanking, or Wallets.</p>
-                                        <button
-                                            onClick={handleOnlinePayment}
-                                            disabled={processing}
-                                            className="w-full ml-8 max-w-sm bg-[#8b5e3c] text-white font-bold py-3 px-6 rounded hover:bg-[#70482d] transition-all shadow-md disabled:bg-gray-400"
-                                        >
-                                            {processing ? 'Processing...' : `PAY ₹${totalAmount.toLocaleString()} NOW`}
-                                        </button>
-                                    </div>
-
-                                    <div className="relative flex py-2 items-center">
-                                        <div className="flex-grow border-t border-gray-200"></div>
-                                        <span className="flex-shrink-0 mx-4 text-gray-400 text-xs uppercase tracking-wider">OR</span>
-                                        <div className="flex-grow border-t border-gray-200"></div>
-                                    </div>
-
-                                    {/* COD Option */}
-                                    <div className="border border-gray-200 rounded-lg p-4 hover:border-gray-400 transition-colors">
-                                        <div className="flex items-center gap-3 mb-3">
-                                            <input type="radio" name="payment" id="cod" className="text-[#8b5e3c] focus:ring-[#8b5e3c] w-5 h-5" />
-                                            <label htmlFor="cod" className="font-semibold text-gray-800 cursor-pointer">Cash on Delivery</label>
-                                        </div>
-                                        <p className="text-xs text-gray-500 ml-8 mb-4">Pay in cash when your order is delivered.</p>
-                                        <button
-                                            onClick={handleCODPayment}
-                                            disabled={processing}
-                                            className="w-full ml-8 max-w-sm border-2 border-gray-300 text-gray-700 font-bold py-3 px-6 rounded hover:bg-gray-50 transition-all disabled:opacity-50"
-                                        >
-                                            PLACE ORDER (COD)
-                                        </button>
-                                    </div>
-                                </div>
+                                <button
+                                    onClick={handlePlaceOrder}
+                                    disabled={processing || !selectedAddressId}
+                                    className="w-full max-w-sm bg-[#8b5e3c] text-white font-bold py-3 px-6 rounded hover:bg-[#70482d] transition-all shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed"
+                                >
+                                    {processing ? 'Placing Order...' : `PLACE ORDER - ₹${totalAmount.toLocaleString()}`}
+                                </button>
                             </div>
                         </section>
                     </div>
@@ -580,7 +449,7 @@ const Address = () => {
                                 </div>
                             </div>
                             <div className="bg-gray-50 p-4 text-xs text-gray-500 text-center border-t border-gray-100 rounded-b-lg">
-                                Safe & Secure Payment | 100% Authentic Products
+                                100% Authentic Products
                             </div>
                         </div>
                     </div>

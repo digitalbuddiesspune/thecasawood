@@ -27,10 +27,10 @@ const AdminDashboard = lazy(() => import('./admin/pages/Dashboard'))
 const AdminProducts = lazy(() => import('./admin/pages/Products'))
 const AdminProductForm = lazy(() => import('./admin/pages/ProductForm'))
 const AdminCategories = lazy(() => import('./admin/pages/Categories'))
+const AdminCategoryForm = lazy(() => import('./admin/pages/CategoryForm'))
 const AdminOrders = lazy(() => import('./admin/pages/Orders'))
 const AdminOrderDetail = lazy(() => import('./admin/pages/OrderDetail'))
 const AdminUsers = lazy(() => import('./admin/pages/Users'))
-const AdminPayments = lazy(() => import('./admin/pages/Payments'))
 const AdminReports = lazy(() => import('./admin/pages/Reports'))
 const AdminSettings = lazy(() => import('./admin/pages/Settings'))
 
@@ -73,10 +73,11 @@ const AppContent = () => {
             <Route path="products/add" element={<AdminProductForm />} />
             <Route path="products/edit/:id" element={<AdminProductForm />} />
             <Route path="categories" element={<AdminCategories />} />
+            <Route path="categories/add" element={<AdminCategoryForm />} />
+            <Route path="categories/edit/:id" element={<AdminCategoryForm />} />
             <Route path="orders" element={<AdminOrders />} />
             <Route path="orders/:id" element={<AdminOrderDetail />} />
             <Route path="users" element={<AdminUsers />} />
-            <Route path="payments" element={<AdminPayments />} />
             <Route path="reports" element={<AdminReports />} />
             <Route path="settings" element={<AdminSettings />} />
           </Route>

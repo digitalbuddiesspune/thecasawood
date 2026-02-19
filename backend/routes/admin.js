@@ -1,69 +1,84 @@
 import express from 'express';
+import multer from 'multer';
 import { protect, admin } from '../middleware/auth.js';
 import User from '../models/User.js';
 import Product from '../models/Product.js';
 import Order from '../models/Order.js';
 import Fabric from '../models/Fabric.js';
 import Category from '../models/Category.js';
+import cloudinary, { isConfigured } from '../utils/cloudinary.js';
 
 const router = express.Router();
+
+// Multer for image upload (memory storage for Cloudinary)
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+  fileFilter: (req, file, cb) => {
+    const allowed = /^image\/(jpeg|jpg|png|gif|webp)$/i.test(file.mimetype);
+    if (allowed) cb(null, true);
+    else cb(new Error('Only image files (JPEG, PNG, GIF, WebP) are allowed'), false);
+  },
+});
 
 // Apply admin middleware to all routes
 router.use(protect);
 router.use(admin);
 
+// ==================== IMAGE UPLOAD (Cloudinary) ====================
+router.post('/upload', upload.single('image'), async (req, res) => {
+  try {
+    if (!isConfigured) {
+      return res.status(503).json({
+        success: false,
+        message: 'Image upload is not configured. Set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET in .env',
+      });
+    }
+    if (!req.file || !req.file.buffer) {
+      return res.status(400).json({ success: false, message: 'No image file provided' });
+    }
+    const dataUri = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
+    const result = await cloudinary.uploader.upload(dataUri, {
+      folder: 'casawood/products',
+      resource_type: 'image',
+    });
+    return res.json({
+      success: true,
+      url: result.secure_url,
+    });
+  } catch (err) {
+    console.error('Upload error:', err);
+    if (err.message && err.message.includes('Only image files')) {
+      return res.status(400).json({ success: false, message: err.message });
+    }
+    return res.status(500).json({
+      success: false,
+      message: err.message || 'Image upload failed',
+    });
+  }
+});
+
 // ==================== DASHBOARD ====================
 
-// Get dashboard stats
+// Get dashboard stats (today's orders only)
 router.get('/dashboard/stats', async (req, res) => {
   try {
-    const [
-      totalOrders,
-      totalProducts,
-      totalCustomers,
-      pendingOrders,
-      todayOrders,
-      revenueResult
-    ] = await Promise.all([
-      Order.countDocuments(),
-      Product.countDocuments(),
-      User.countDocuments({ role: 'user' }),
-      Order.countDocuments({ orderStatus: 'pending' }),
-      Order.countDocuments({
-        createdAt: {
-          $gte: new Date(new Date().setHours(0, 0, 0, 0)),
-          $lt: new Date(new Date().setHours(23, 59, 59, 999))
-        }
-      }),
-      Order.aggregate([
-        { $match: { paymentStatus: 'paid' } },
-        { $group: { _id: null, total: { $sum: '$total' } } }
-      ])
-    ]);
+    const startOfToday = new Date(new Date().setHours(0, 0, 0, 0));
+    const endOfToday = new Date(new Date().setHours(23, 59, 59, 999));
+    const todayMatch = { createdAt: { $gte: startOfToday, $lte: endOfToday } };
 
-    // Today's sales
-    const todaySalesResult = await Order.aggregate([
-      {
-        $match: {
-          createdAt: {
-            $gte: new Date(new Date().setHours(0, 0, 0, 0)),
-            $lt: new Date(new Date().setHours(23, 59, 59, 999))
-          },
-          paymentStatus: 'paid'
-        }
-      },
-      { $group: { _id: null, total: { $sum: '$total' } } }
+    const [todayOrders, todayConfirmedOrders, todayCancelledOrders] = await Promise.all([
+      Order.countDocuments(todayMatch),
+      Order.countDocuments({ ...todayMatch, orderStatus: 'confirmed' }),
+      Order.countDocuments({ ...todayMatch, orderStatus: 'cancelled' }),
     ]);
 
     res.json({
       success: true,
       data: {
-        totalOrders,
-        totalProducts,
-        totalCustomers,
-        totalRevenue: revenueResult[0]?.total || 0,
-        todaySales: todaySalesResult[0]?.total || 0,
-        pendingOrders
+        todayOrders,
+        todayConfirmedOrders,
+        todayCancelledOrders,
       }
     });
   } catch (error) {
@@ -86,46 +101,48 @@ router.get('/dashboard/recent-orders', async (req, res) => {
   }
 });
 
-// Get sales chart data
+// Get sales chart data – monthly: last 12 months with order count and sum of orders
 router.get('/dashboard/sales-chart', async (req, res) => {
   try {
-    const { period = 'monthly' } = req.query;
-    let groupBy, dateFormat;
-    let startDate = new Date();
-
-    if (period === 'weekly') {
-      startDate.setDate(startDate.getDate() - 7);
-      groupBy = { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } };
-    } else if (period === 'monthly') {
-      startDate.setMonth(startDate.getMonth() - 1);
-      groupBy = { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } };
-    } else {
-      startDate.setFullYear(startDate.getFullYear() - 1);
-      groupBy = { $dateToString: { format: '%Y-%m', date: '$createdAt' } };
-    }
+    const now = new Date();
+    const startDate = new Date(now.getFullYear(), now.getMonth() - 11, 1, 0, 0, 0, 0);
 
     const salesData = await Order.aggregate([
-      {
-        $match: {
-          createdAt: { $gte: startDate },
-          paymentStatus: 'paid'
-        }
-      },
+      { $match: { createdAt: { $gte: startDate } } },
       {
         $group: {
-          _id: groupBy,
-          value: { $sum: '$total' },
-          orders: { $sum: 1 }
+          _id: { $dateToString: { format: '%Y-%m', date: '$createdAt' } },
+          orderCount: { $sum: 1 },
+          totalAmount: { $sum: '$total' },
         }
       },
       { $sort: { _id: 1 } }
     ]);
 
-    const formattedData = salesData.map(item => ({
-      label: item._id,
-      value: item.value,
-      orders: item.orders
-    }));
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const byMonth = Object.fromEntries(
+      salesData.map((item) => [
+        item._id,
+        {
+          label: `${monthNames[parseInt(item._id.slice(5), 10) - 1]} ${item._id.slice(0, 4)}`,
+          orderCount: item.orderCount,
+          totalAmount: item.totalAmount,
+        }
+      ])
+    );
+
+    const formattedData = [];
+    for (let i = 0; i < 12; i++) {
+      const d = new Date(startDate.getFullYear(), startDate.getMonth() + i, 1);
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      formattedData.push(
+        byMonth[key] || {
+          label: `${monthNames[d.getMonth()]} ${d.getFullYear()}`,
+          orderCount: 0,
+          totalAmount: 0,
+        }
+      );
+    }
 
     res.json({ success: true, data: formattedData });
   } catch (error) {
@@ -641,7 +658,8 @@ router.get('/orders', async (req, res) => {
 router.get('/orders/:id', async (req, res) => {
   try {
     const order = await Order.findById(req.params.id)
-      .populate('user', 'name email phone');
+      .populate('user', 'name email phone')
+      .populate('shippingAddress');
 
     if (!order) {
       return res.status(404).json({ success: false, message: 'Order not found' });
@@ -689,9 +707,12 @@ router.patch('/orders/:id/status', async (req, res) => {
 // Update payment status
 router.patch('/orders/:id/payment-status', async (req, res) => {
   try {
-    const { status } = req.body;
+    const status = req.body?.status ?? req.body?.paymentStatus;
     const validStatuses = ['pending', 'paid', 'failed', 'refunded'];
 
+    if (status == null || status === '') {
+      return res.status(400).json({ success: false, message: 'Payment status is required' });
+    }
     if (!validStatuses.includes(status)) {
       return res.status(400).json({ success: false, message: 'Invalid payment status' });
     }
@@ -707,40 +728,6 @@ router.patch('/orders/:id/payment-status', async (req, res) => {
     }
 
     res.json({ success: true, data: order });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
-  }
-});
-
-// ==================== PAYMENTS ====================
-
-// Get payment transactions (from orders)
-router.get('/payments/transactions', async (req, res) => {
-  try {
-    const { page = 1, limit = 10, method, status } = req.query;
-    const query = {};
-
-    if (method) query.paymentMethod = method;
-    if (status) query.paymentStatus = status;
-
-    const orders = await Order.find(query)
-      .populate('user', 'name email')
-      .select('orderNumber total paymentMethod paymentStatus razorpayPaymentId createdAt user')
-      .sort({ createdAt: -1 })
-      .skip((page - 1) * limit)
-      .limit(parseInt(limit));
-
-    const total = await Order.countDocuments(query);
-
-    res.json({
-      success: true,
-      data: {
-        transactions: orders,
-        totalPages: Math.ceil(total / limit),
-        currentPage: parseInt(page),
-        total
-      }
-    });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

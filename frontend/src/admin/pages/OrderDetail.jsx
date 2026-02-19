@@ -26,9 +26,7 @@ const OrderDetail = () => {
     try {
       setLoading(true);
       const response = await adminOrdersAPI.getById(id);
-      if (response.data.success) {
-        setOrder(response.data.data);
-      }
+      if (response.data.success) setOrder(response.data.data);
     } catch (error) {
       console.error('Error fetching order:', error);
     } finally {
@@ -41,8 +39,6 @@ const OrderDetail = () => {
       setUpdating(true);
       await adminOrdersAPI.updateStatus(id, newStatus);
       fetchOrder();
-    } catch (error) {
-      console.error('Error updating status:', error);
     } finally {
       setUpdating(false);
     }
@@ -52,262 +48,274 @@ const OrderDetail = () => {
     try {
       setUpdating(true);
       await adminOrdersAPI.updatePaymentStatus(id, newStatus);
-      fetchOrder();
-    } catch (error) {
-      console.error('Error updating payment status:', error);
+      await fetchOrder();
+    } catch (err) {
+      const msg = err.response?.data?.message || err.message || 'Failed to update payment status';
+      alert(msg);
     } finally {
       setUpdating(false);
     }
   };
 
   const getStatusColor = (status) => {
-    const found = orderStatuses.find(s => s.value === status);
+    const found = orderStatuses.find((s) => s.value === status);
     return found?.color || 'bg-gray-100 text-gray-800';
   };
+
+  const formatDate = (d) =>
+    d
+      ? new Date(d).toLocaleDateString('en-IN', {
+          weekday: 'short',
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+        })
+      : '—';
+
+  const getAddress = () => {
+    const a = order?.shippingAddress;
+    if (!a || typeof a !== 'object') return '—';
+    const parts = [
+      a.addressLine1,
+      a.addressLine2,
+      a.city,
+      a.state && a.pincode ? `${a.state} - ${a.pincode}` : a.pincode,
+      a.landmark,
+    ].filter(Boolean);
+    return parts.join(', ') || '—';
+  };
+
+  const timelineSteps = [
+    { key: 'ordered', label: 'Ordered', date: order?.createdAt, done: true },
+    { key: 'packed', label: 'Packed', date: order?.createdAt, done: !['pending'].includes(order?.orderStatus) },
+    { key: 'shipped', label: 'Shipped', date: order?.deliveredOn, done: ['shipped', 'delivered'].includes(order?.orderStatus) },
+    { key: 'delivered', label: 'Delivered', date: order?.deliveredOn, done: order?.orderStatus === 'delivered' },
+    { key: 'cancelled', label: 'Cancelled', date: null, done: order?.orderStatus === 'cancelled' },
+  ];
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#8b5e3c]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#8b5e3c]" />
       </div>
     );
   }
 
   if (!order) {
     return (
-      <div className="text-center py-12">
+      <div className="text-center py-12 text-sm">
         <p className="text-gray-500">Order not found</p>
-        <button
-          onClick={() => navigate('/admin/orders')}
-          className="mt-4 text-[#8b5e3c] hover:underline"
-        >
+        <button onClick={() => navigate('/admin/orders')} className="mt-4 text-[#8b5e3c] hover:underline">
           Back to Orders
         </button>
       </div>
     );
   }
 
+  const customerName = order.user?.name || order.shippingAddress?.name || 'Guest';
+  const email = order.user?.email || order.shippingAddress?.email || 'N/A';
+  const phone = order.user?.phone || order.shippingAddress?.phone || '—';
+  const isPaid = order.paymentStatus === 'paid';
+
   return (
-    <div className="space-y-6">
-      {/* Header */}
+    <div className="space-y-6 text-sm">
+      {/* Back */}
+      <button
+        onClick={() => navigate('/admin/orders')}
+        className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
+      >
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+        </svg>
+        Back to Orders
+      </button>
+
+      {/* Header: Order ID + Status dropdowns */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <button
-            onClick={() => navigate('/admin/orders')}
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-2"
+        <h1 className="text-xl font-bold text-gray-800">#{order.orderNumber}</h1>
+        <div className="flex flex-wrap items-center gap-3">
+          <select
+            value={order.orderStatus}
+            onChange={(e) => handleStatusChange(e.target.value)}
+            disabled={updating}
+            className={`px-3 py-1.5 rounded-full font-medium border cursor-pointer ${getStatusColor(order.orderStatus)}`}
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            Back to Orders
-          </button>
-          <h1 className="text-2xl font-bold text-gray-800">Order {order.orderNumber}</h1>
-          <p className="text-gray-500">
-            Placed on {new Date(order.createdAt).toLocaleDateString('en-IN', {
-              day: 'numeric',
-              month: 'long',
-              year: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit'
-            })}
-          </p>
-        </div>
-        <div className="flex items-center gap-4">
-          <span className={`px-4 py-2 rounded-full text-sm font-medium ${getStatusColor(order.orderStatus)}`}>
-            {order.orderStatus?.charAt(0).toUpperCase() + order.orderStatus?.slice(1)}
-          </span>
+            {orderStatuses.map((s) => (
+              <option key={s.value} value={s.value}>{s.label}</option>
+            ))}
+          </select>
+          <select
+            value={order.paymentStatus}
+            onChange={(e) => handlePaymentStatusChange(e.target.value)}
+            disabled={updating}
+            className={`px-3 py-1.5 rounded-full font-medium border cursor-pointer ${
+              isPaid ? 'bg-green-100 text-green-800 border-green-200' : 'bg-yellow-100 text-yellow-800 border-yellow-200'
+            }`}
+          >
+            <option value="pending">Unpaid</option>
+            <option value="paid">Paid</option>
+          </select>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Main Content */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Order Items */}
-          <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-            <div className="p-6 border-b">
-              <h2 className="text-lg font-semibold text-gray-800">Order Items</h2>
-            </div>
-            <div className="divide-y">
-              {order.items?.map((item, index) => (
-                <div key={index} className="p-6 flex gap-4">
-                  <img
-                    src={item.image || item.product?.image || '/placeholder.png'}
-                    alt={item.name || item.product?.name}
-                    className="w-20 h-20 object-cover rounded-lg bg-gray-100"
-                  />
-                  <div className="flex-1">
-                    <h3 className="font-medium text-gray-900">{item.name || item.product?.name}</h3>
-                    {item.variantName && (
-                      <p className="text-sm text-gray-500">Variant: {item.variantName}</p>
-                    )}
-                    {item.fabric && (
-                      <p className="text-sm text-gray-500">Fabric: {item.fabric}</p>
-                    )}
-                    {item.colorData && (
-                      <div className="flex items-center gap-2 mt-1">
-                        <span className="text-sm text-gray-500">Color:</span>
-                        <span
-                          className="w-4 h-4 rounded-full border"
-                          style={{ backgroundColor: item.colorData.color }}
-                        />
-                        <span className="text-sm text-gray-500">{item.colorData.name}</span>
-                      </div>
-                    )}
-                    <p className="text-sm text-gray-500 mt-1">Qty: {item.quantity}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-medium text-gray-900">₹{(item.price * item.quantity)?.toLocaleString()}</p>
-                    <p className="text-sm text-gray-500">₹{item.price?.toLocaleString()} each</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="p-6 bg-gray-50 space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Subtotal</span>
-                <span className="text-gray-900">₹{order.subtotal?.toLocaleString()}</span>
-              </div>
-              {order.discount > 0 && (
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">Discount</span>
-                  <span className="text-green-600">-₹{order.discount?.toLocaleString()}</span>
-                </div>
-              )}
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Delivery Charges</span>
-                <span className="text-gray-900">
-                  {order.deliveryCharges > 0 ? `₹${order.deliveryCharges?.toLocaleString()}` : 'Free'}
-                </span>
-              </div>
-              <div className="flex justify-between text-lg font-semibold pt-2 border-t">
-                <span className="text-gray-900">Total</span>
-                <span className="text-gray-900">₹{order.total?.toLocaleString()}</span>
-              </div>
-            </div>
-          </div>
+      {/* Customer & Shipping block */}
+      <div className="bg-white rounded-xl shadow-sm p-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <p><span className="text-gray-500">Date:</span> {formatDate(order.createdAt)}</p>
+          <p><span className="text-gray-500">Payment:</span> {order.paymentMethod || 'COD'}</p>
+          <p><span className="text-gray-500">Customer:</span> {customerName}</p>
+          <p><span className="text-gray-500">Phone:</span> {phone}</p>
+          <p><span className="text-gray-500">Email:</span> {email}</p>
+          <p className="md:col-span-2"><span className="text-gray-500">Address:</span> {getAddress()}</p>
+        </div>
+      </div>
 
-          {/* Customer Info */}
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">Customer Information</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <h3 className="text-sm font-medium text-gray-500 mb-2">Customer</h3>
-                <p className="text-gray-900">{order.user?.name || 'Guest User'}</p>
-                <p className="text-gray-500">{order.user?.email}</p>
-                <p className="text-gray-500">{order.user?.phone}</p>
+      {/* Order tracking timeline */}
+      <div className="bg-white rounded-xl shadow-sm p-6">
+        <h2 className="font-semibold text-gray-800 mb-4">Order tracking</h2>
+        <div className="flex flex-wrap items-center gap-2 sm:gap-0">
+          {timelineSteps.map((step, i) => (
+            <div key={step.key} className="flex items-center">
+              <div className="flex flex-col items-center min-w-[80px] sm:min-w-[100px]">
+                <div
+                  className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                    step.done ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-500'
+                  }`}
+                >
+                  {step.done ? (
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  ) : (
+                    <span className="text-xs">{step.label.slice(0, 1)}</span>
+                  )}
+                </div>
+                <span className="mt-1 text-xs font-medium text-gray-700">{step.label}</span>
+                {step.date && step.done && (
+                  <span className="text-xs text-gray-500 mt-0.5">{formatDate(step.date)}</span>
+                )}
               </div>
-              <div>
-                <h3 className="text-sm font-medium text-gray-500 mb-2">Shipping Address</h3>
-                <p className="text-gray-900">{order.shippingAddress?.name}</p>
-                <p className="text-gray-500">{order.shippingAddress?.phone}</p>
-                <p className="text-gray-500">
-                  {order.shippingAddress?.addressLine1}
-                  {order.shippingAddress?.addressLine2 && `, ${order.shippingAddress.addressLine2}`}
-                </p>
-                <p className="text-gray-500">
-                  {order.shippingAddress?.city}, {order.shippingAddress?.state} - {order.shippingAddress?.pincode}
-                </p>
-              </div>
+              {i < timelineSteps.length - 1 && (
+                <div className={`flex-1 h-0.5 mx-1 sm:mx-2 min-w-[20px] ${step.done ? 'bg-green-300' : 'bg-gray-200'}`} />
+              )}
             </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Detailed information grid */}
+      <div className="bg-white rounded-xl shadow-sm p-6">
+        <h2 className="font-semibold text-gray-800 mb-4">Details</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div>
+            <p className="text-gray-500 uppercase text-xs">User ID</p>
+            <p className="font-medium text-gray-900">{order.user?._id?.slice(-6) || '—'}</p>
+          </div>
+          <div>
+            <p className="text-gray-500 uppercase text-xs">Display Order ID</p>
+            <p className="font-medium text-gray-900">#{order.orderNumber}</p>
+          </div>
+          <div>
+            <p className="text-gray-500 uppercase text-xs">Customer name</p>
+            <p className="font-medium text-[#8b5e3c]">{customerName}</p>
+          </div>
+          <div>
+            <p className="text-gray-500 uppercase text-xs">Mobile</p>
+            <p className="font-medium text-gray-900">{phone}</p>
+          </div>
+          <div>
+            <p className="text-gray-500 uppercase text-xs">Email</p>
+            <p className="font-medium text-gray-900">{email}</p>
+          </div>
+          <div>
+            <p className="text-gray-500 uppercase text-xs">Payment status</p>
+            <span className={`inline-block px-2 py-0.5 rounded font-medium ${isPaid ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+              {isPaid ? 'Paid' : 'Unpaid'}
+            </span>
+          </div>
+          <div>
+            <p className="text-gray-500 uppercase text-xs">Order status</p>
+            <span className={`inline-block px-2 py-0.5 rounded font-medium ${getStatusColor(order.orderStatus)}`}>
+              {order.orderStatus?.charAt(0).toUpperCase() + order.orderStatus?.slice(1)}
+            </span>
+          </div>
+          <div>
+            <p className="text-gray-500 uppercase text-xs">Payment mode</p>
+            <p className="font-medium text-gray-900">{order.paymentMethod || 'COD'}</p>
+          </div>
+          <div>
+            <p className="text-gray-500 uppercase text-xs">Order date & time</p>
+            <p className="font-medium text-gray-900">{formatDate(order.createdAt)}</p>
           </div>
         </div>
+      </div>
 
-        {/* Sidebar */}
-        <div className="space-y-6">
-          {/* Update Status */}
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">Update Status</h2>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Order Status</label>
-                <select
-                  value={order.orderStatus}
-                  onChange={(e) => handleStatusChange(e.target.value)}
-                  disabled={updating}
-                  className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b5e3c]"
-                >
-                  {orderStatuses.map((status) => (
-                    <option key={status.value} value={status.value}>{status.label}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Payment Status</label>
-                <select
-                  value={order.paymentStatus}
-                  onChange={(e) => handlePaymentStatusChange(e.target.value)}
-                  disabled={updating}
-                  className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b5e3c]"
-                >
-                  <option value="pending">Pending</option>
-                  <option value="paid">Paid</option>
-                  <option value="failed">Failed</option>
-                  <option value="refunded">Refunded</option>
-                </select>
-              </div>
+      {/* Order items table */}
+      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+        <div className="p-4 border-b flex items-center justify-between">
+          <h2 className="font-semibold text-gray-800">Order items</h2>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Item</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Quantity</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Unit price</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">GST</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {order.items?.map((item, index) => (
+                <tr key={index} className="hover:bg-gray-50">
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={item.image || item.product?.image || '/placeholder.png'}
+                        alt=""
+                        className="w-10 h-10 object-cover rounded bg-gray-100"
+                      />
+                      <div>
+                        <p className="font-medium text-gray-900">{item.name || item.product?.name}</p>
+                        {item.variantName && <p className="text-gray-500 text-xs">{item.variantName}</p>}
+                        {item.fabric && <p className="text-gray-500 text-xs">Fabric: {item.fabric}</p>}
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 text-gray-600">{item.quantity}</td>
+                  <td className="px-4 py-3 text-gray-600">₹{item.price?.toLocaleString()}</td>
+                  <td className="px-4 py-3 text-gray-500">—</td>
+                  <td className="px-4 py-3 font-medium text-gray-900">₹{((item.price || 0) * (item.quantity || 0))?.toLocaleString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="p-4 bg-gray-50 border-t space-y-1">
+          {order.subtotal != null && (
+            <div className="flex justify-between">
+              <span className="text-gray-500">Subtotal</span>
+              <span>₹{order.subtotal?.toLocaleString()}</span>
             </div>
-          </div>
-
-          {/* Payment Info */}
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">Payment Information</h2>
-            <div className="space-y-3">
-              <div className="flex justify-between">
-                <span className="text-gray-500">Method</span>
-                <span className="text-gray-900">{order.paymentMethod}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500">Status</span>
-                <span className={`font-medium ${
-                  order.paymentStatus === 'paid' ? 'text-green-600' :
-                  order.paymentStatus === 'failed' ? 'text-red-600' :
-                  'text-yellow-600'
-                }`}>
-                  {order.paymentStatus?.charAt(0).toUpperCase() + order.paymentStatus?.slice(1)}
-                </span>
-              </div>
-              {order.razorpayPaymentId && (
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Payment ID</span>
-                  <span className="text-gray-900 text-xs">{order.razorpayPaymentId}</span>
-                </div>
-              )}
+          )}
+          {order.discount > 0 && (
+            <div className="flex justify-between text-green-600">
+              <span>Discount</span>
+              <span>-₹{order.discount?.toLocaleString()}</span>
             </div>
-          </div>
-
-          {/* Order Timeline */}
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">Order Timeline</h2>
-            <div className="space-y-4">
-              {order.estimatedDelivery && (
-                <div className="flex items-center gap-3">
-                  <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">Estimated Delivery</p>
-                    <p className="text-xs text-gray-500">
-                      {new Date(order.estimatedDelivery).toLocaleDateString('en-IN')}
-                    </p>
-                  </div>
-                </div>
-              )}
-              {order.deliveredOn && (
-                <div className="flex items-center gap-3">
-                  <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">Delivered</p>
-                    <p className="text-xs text-gray-500">
-                      {new Date(order.deliveredOn).toLocaleDateString('en-IN')}
-                    </p>
-                  </div>
-                </div>
-              )}
-              {order.trackingNumber && (
-                <div className="pt-4 border-t">
-                  <p className="text-sm text-gray-500">Tracking Number</p>
-                  <p className="font-medium text-gray-900">{order.trackingNumber}</p>
-                </div>
-              )}
+          )}
+          {order.deliveryCharges != null && order.deliveryCharges > 0 && (
+            <div className="flex justify-between">
+              <span className="text-gray-500">Delivery</span>
+              <span>₹{order.deliveryCharges?.toLocaleString()}</span>
             </div>
+          )}
+          <div className="flex justify-between font-semibold pt-2 border-t border-gray-200">
+            <span>Total</span>
+            <span>₹{order.total?.toLocaleString()}</span>
           </div>
         </div>
       </div>

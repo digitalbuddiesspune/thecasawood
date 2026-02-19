@@ -73,12 +73,7 @@ export const adminOrdersAPI = {
   getAll: (params) => adminApi.get('/admin/orders', { params }),
   getById: (id) => adminApi.get(`/admin/orders/${id}`),
   updateStatus: (id, status) => adminApi.patch(`/admin/orders/${id}/status`, { status }),
-  updatePaymentStatus: (id, status) => adminApi.patch(`/admin/orders/${id}/payment-status`, { status }),
-};
-
-// Admin Payments API (transactions from orders; no separate payments resource)
-export const adminPaymentsAPI = {
-  getTransactions: (params) => adminApi.get('/admin/payments/transactions', { params }),
+  updatePaymentStatus: (id, status) => adminApi.patch(`/admin/orders/${id}/payment-status`, { status: String(status) }),
 };
 
 // Admin Reports API (sales, products, users; revenue/export not implemented on backend)
@@ -94,6 +89,15 @@ export const adminFabricsAPI = {
   create: (data) => adminApi.post('/admin/fabrics', data),
   update: (id, data) => adminApi.put(`/admin/fabrics/${id}`, data),
   delete: (id) => adminApi.delete(`/admin/fabrics/${id}`),
+};
+
+// Admin image upload (Cloudinary via backend)
+export const adminUploadAPI = {
+  uploadImage: (file) => {
+    const formData = new FormData();
+    formData.append('image', file);
+    return adminApi.post('/admin/upload', formData);
+  },
 };
 
 export default adminApi;

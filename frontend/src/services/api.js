@@ -116,13 +116,6 @@ export const usersAPI = {
   getOrders: (params) => api.get('/users/orders', { params })
 };
 
-// Payment API
-export const paymentAPI = {
-  getKey: () => api.get('/payment/key'),
-  createOrder: (data) => api.post('/payment/create-order', data),
-  verify: (data) => api.post('/payment/verify', data)
-};
-
 // Fabrics API
 export const fabricsAPI = {
   getAll: () => api.get('/fabrics')

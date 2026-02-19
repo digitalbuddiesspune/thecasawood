@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { adminProductsAPI, adminCategoriesAPI, adminFabricsAPI } from '../services/adminApi';
+import { adminProductsAPI, adminCategoriesAPI, adminFabricsAPI, adminUploadAPI } from '../services/adminApi';
 
 const TAG_OPTIONS = ['Best Seller', 'New', 'Sale', 'Featured', 'Premium', 'Trending'];
 
@@ -67,6 +67,10 @@ const ProductForm = () => {
   const [newDimDetailTitle, setNewDimDetailTitle] = useState('');
   const [newDimDetailItem, setNewDimDetailItem] = useState({ label: '', value: '' });
   const [dimDetailItemIndex, setDimDetailItemIndex] = useState(null);
+  const [uploadingMain, setUploadingMain] = useState(false);
+  const [uploadingGallery, setUploadingGallery] = useState(false);
+  const mainImageInputRef = useRef(null);
+  const galleryInputRef = useRef(null);
 
   useEffect(() => {
     fetchCategories();
@@ -305,6 +309,65 @@ const ProductForm = () => {
     });
   };
 
+  const handleMainImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!/^image\/(jpeg|jpg|png|gif|webp)$/i.test(file.type)) {
+      setErrors((prev) => ({ ...prev, image: 'Please select a valid image (JPEG, PNG, GIF, WebP)' }));
+      return;
+    }
+    try {
+      setUploadingMain(true);
+      setErrors((prev) => ({ ...prev, image: '' }));
+      const res = await adminUploadAPI.uploadImage(file);
+      if (res.data?.success && res.data?.url) {
+        setFormData((prev) => ({ ...prev, image: res.data.url }));
+      } else {
+        setErrors((prev) => ({ ...prev, image: 'Upload failed' }));
+      }
+    } catch (err) {
+      setErrors((prev) => ({
+        ...prev,
+        image: err.response?.data?.message || 'Upload failed',
+      }));
+    } finally {
+      setUploadingMain(false);
+      if (mainImageInputRef.current) mainImageInputRef.current.value = '';
+    }
+  };
+
+  const handleGalleryUpload = async (e) => {
+    const files = e.target.files;
+    if (!files?.length) return;
+    const validFiles = Array.from(files).filter((f) =>
+      /^image\/(jpeg|jpg|png|gif|webp)$/i.test(f.type)
+    );
+    if (validFiles.length === 0) {
+      setErrors((prev) => ({ ...prev, images: 'Please select valid images (JPEG, PNG, GIF, WebP)' }));
+      return;
+    }
+    try {
+      setUploadingGallery(true);
+      setErrors((prev) => ({ ...prev, images: '' }));
+      const urls = [];
+      for (const file of validFiles) {
+        const res = await adminUploadAPI.uploadImage(file);
+        if (res.data?.success && res.data?.url) urls.push(res.data.url);
+      }
+      if (urls.length) {
+        setFormData((prev) => ({ ...prev, images: [...prev.images, ...urls] }));
+      }
+    } catch (err) {
+      setErrors((prev) => ({
+        ...prev,
+        images: err.response?.data?.message || 'Upload failed',
+      }));
+    } finally {
+      setUploadingGallery(false);
+      if (galleryInputRef.current) galleryInputRef.current.value = '';
+    }
+  };
+
   const handleImageAdd = () => {
     const url = prompt('Enter image URL:');
     if (url) {
@@ -418,12 +481,18 @@ const ProductForm = () => {
     );
   }
 
+  const inputClass = (err) =>
+    `w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b5e3c] ${err ? 'border-red-500' : 'border-gray-200'}`;
+  const labelClass = 'block text-sm font-medium text-gray-700 mb-1';
+  const sectionTitle = 'text-base font-semibold text-gray-800 mb-3 pb-2 border-b border-gray-200';
+
   return (
-    <div className="max-w-4xl mx-auto pb-12">
+    <div className="bg-white min-h-[calc(100vh-5rem)] -mx-4 -my-4 px-4 py-6 pb-12 lg:-mx-6 lg:-my-6 lg:px-6 lg:py-6 border border-gray-200 rounded-xl shadow-md mx-5">
+      <div className="w-full max-w-fullF">
       <div className="mb-6">
         <button
           onClick={() => navigate('/admin/products')}
-          className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4"
+          className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4 text-sm"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -435,362 +504,177 @@ const ProductForm = () => {
         </h1>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Basic Information */}
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">Basic Information</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Product Name *</label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b5e3c] ${errors.name ? 'border-red-500' : 'border-gray-200'}`}
-                placeholder="Enter product name"
-              />
+      <form onSubmit={handleSubmit} className="space-y-8">
+        {/* Basic + Pricing + Category in one flow */}
+        <div>
+          <h2 className={sectionTitle}>Basic & pricing</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="lg:col-span-3">
+              <label className={labelClass}>Product Name *</label>
+              <input type="text" name="name" value={formData.name} onChange={handleChange} className={inputClass(errors.name)} placeholder="Enter product name" />
               {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
             </div>
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Description *</label>
-              <textarea
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                rows={4}
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b5e3c]"
-                placeholder="Enter product description"
-              />
+            <div className="lg:col-span-3">
+              <label className={labelClass}>Description *</label>
+              <textarea name="description" value={formData.description} onChange={handleChange} rows={3} className={inputClass(false)} placeholder="Enter product description" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Category *</label>
-              <select
-                name="category"
-                value={formData.category}
-                onChange={handleChange}
-                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b5e3c] ${errors.category ? 'border-red-500' : 'border-gray-200'}`}
-              >
+              <label className={labelClass}>Category *</label>
+              <select name="category" value={formData.category} onChange={handleChange} className={inputClass(errors.category)}>
                 <option value="">Select Category</option>
                 {categories.map((cat) => (
-                  <option key={cat._id || cat.name} value={cat.name}>
-                    {cat.name}
-                  </option>
+                  <option key={cat._id || cat.name} value={cat.name}>{cat.name}</option>
                 ))}
               </select>
               {errors.category && <p className="text-red-500 text-sm mt-1">{errors.category}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">SKU</label>
-              <input
-                type="text"
-                name="sku"
-                value={formData.sku}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b5e3c]"
-                placeholder="e.g. CW-SOFA-001"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Pricing & Stock */}
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">Pricing & Stock</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Price (₹) *</label>
-              <input
-                type="number"
-                name="price"
-                value={formData.price}
-                onChange={handleChange}
-                min={0}
-                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b5e3c] ${errors.price ? 'border-red-500' : 'border-gray-200'}`}
-                placeholder="0"
-              />
+              <label className={labelClass}>Price (₹) *</label>
+              <input type="number" name="price" value={formData.price} onChange={handleChange} min={0} className={inputClass(errors.price)} placeholder="0" />
               {errors.price && <p className="text-red-500 text-sm mt-1">{errors.price}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Original Price (₹)</label>
-              <input
-                type="number"
-                name="originalPrice"
-                value={formData.originalPrice}
-                onChange={handleChange}
-                min={0}
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b5e3c]"
-                placeholder="MRP"
-              />
+              <label className={labelClass}>Original Price (₹)</label>
+              <input type="number" name="originalPrice" value={formData.originalPrice} onChange={handleChange} min={0} className={inputClass(false)} placeholder="MRP" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Stock Quantity</label>
-              <input
-                type="number"
-                name="stockQuantity"
-                value={formData.stockQuantity}
-                onChange={handleChange}
-                min={0}
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b5e3c]"
-                placeholder="0"
-              />
+              <label className={labelClass}>Stock Quantity</label>
+              <input type="number" name="stockQuantity" value={formData.stockQuantity} onChange={handleChange} min={0} className={inputClass(false)} placeholder="0" />
             </div>
-            <div className="flex items-center gap-2 pt-8">
-              <input
-                type="checkbox"
-                id="inStock"
-                checked={formData.inStock}
-                onChange={(e) => setFormData((prev) => ({ ...prev, inStock: e.target.checked }))}
-                className="rounded border-gray-300 text-[#8b5e3c] focus:ring-[#8b5e3c]"
-              />
+            <div>
+              <label className={labelClass}>SKU</label>
+              <input type="text" name="sku" value={formData.sku} onChange={handleChange} className={inputClass(false)} placeholder="e.g. CW-SOFA-001" />
+            </div>
+            <div className="flex items-center gap-2 pt-6">
+              <input type="checkbox" id="inStock" checked={formData.inStock} onChange={(e) => setFormData((prev) => ({ ...prev, inStock: e.target.checked }))} className="rounded border-gray-300 text-[#8b5e3c] focus:ring-[#8b5e3c]" />
               <label htmlFor="inStock" className="text-sm font-medium text-gray-700">In Stock</label>
             </div>
           </div>
         </div>
 
         {/* Images */}
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">Images</h2>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Main Image URL *</label>
-              <input
-                type="url"
-                name="image"
-                value={formData.image}
-                onChange={handleChange}
-                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b5e3c] ${errors.image ? 'border-red-500' : 'border-gray-200'}`}
-                placeholder="https://..."
-              />
+        <div>
+          <h2 className={sectionTitle}>Images</h2>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div className="lg:col-span-3">
+              <label className={labelClass}>Main Image *</label>
+              <div className="flex flex-wrap items-center gap-3 mb-2">
+                <input ref={mainImageInputRef} type="file" accept="image/jpeg,image/jpg,image/png,image/gif,image/webp" onChange={handleMainImageUpload} className="hidden" />
+                <button type="button" onClick={() => mainImageInputRef.current?.click()} disabled={uploadingMain} className="px-4 py-2 bg-[#8b5e3c] text-white rounded-lg hover:bg-[#70482d] disabled:opacity-50 flex items-center gap-2 text-sm">
+                  {uploadingMain ? (<><div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" /> Uploading…</>) : <>Upload from device</>}
+                </button>
+                <span className="text-sm text-gray-500">or paste URL below</span>
+              </div>
+              <input type="url" name="image" value={formData.image} onChange={handleChange} className={`${inputClass(errors.image)} mb-2`} placeholder="https://..." />
+              {formData.image && <img src={formData.image} alt="Main" className="w-28 h-28 object-cover rounded-lg border mt-2" />}
               {errors.image && <p className="text-red-500 text-sm mt-1">{errors.image}</p>}
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Additional Images</label>
-              <div className="flex flex-wrap gap-4">
+            <div className="lg:col-span-3">
+              <label className={labelClass}>Additional Images</label>
+              <input ref={galleryInputRef} type="file" accept="image/jpeg,image/jpg,image/png,image/gif,image/webp" multiple onChange={handleGalleryUpload} className="hidden" />
+              <div className="flex flex-wrap gap-3">
                 {formData.images.map((img, index) => (
                   <div key={index} className="relative group">
-                    <img src={img} alt={`Product ${index + 1}`} className="w-24 h-24 object-cover rounded-lg border" />
-                    <button
-                      type="button"
-                      onClick={() => handleImageRemove(index)}
-                      className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      ×
-                    </button>
+                    <img src={img} alt="" className="w-20 h-20 object-cover rounded-lg border" />
+                    <button type="button" onClick={() => handleImageRemove(index)} className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full text-xs leading-none opacity-0 group-hover:opacity-100">×</button>
                   </div>
                 ))}
-                <button
-                  type="button"
-                  onClick={handleImageAdd}
-                  className="w-24 h-24 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-600 hover:border-gray-400"
-                >
-                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
+                <button type="button" onClick={() => galleryInputRef.current?.click()} disabled={uploadingGallery} className="w-20 h-20 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center text-gray-400 hover:border-[#8b5e3c] disabled:opacity-50 text-xs">
+                  {uploadingGallery ? <div className="animate-spin rounded-full h-5 w-5 border-2 border-[#8b5e3c] border-t-transparent" /> : <>+ Upload</>}
                 </button>
+                <button type="button" onClick={handleImageAdd} className="w-20 h-20 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center text-gray-400 hover:border-gray-400 text-xs">URL</button>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Tag (single) */}
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">Tag</h2>
-          <div className="flex flex-wrap gap-2">
-            {TAG_OPTIONS.map((tag) => (
-              <button
-                key={tag}
-                type="button"
-                onClick={() => handleTagSelect(tag)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                  formData.tag === tag ? 'bg-[#8b5e3c] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                {tag}
-              </button>
-            ))}
-            <span className="text-sm text-gray-500 self-center ml-2">Optional - select one</span>
-          </div>
-        </div>
-
-        {/* Rating & Reviews */}
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">Rating & Reviews</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Rating (0-5)</label>
-              <input
-                type="number"
-                name="rating"
-                value={formData.rating}
-                onChange={handleChange}
-                min={0}
-                max={5}
-                step={0.1}
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b5e3c]"
-                placeholder="0"
-              />
+        {/* Tag + Rating */}
+        <div>
+          <h2 className={sectionTitle}>Tag & rating</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="lg:col-span-3">
+              <label className={labelClass}>Tag (optional)</label>
+              <div className="flex flex-wrap gap-2">
+                {TAG_OPTIONS.map((tag) => (
+                  <button key={tag} type="button" onClick={() => handleTagSelect(tag)} className={`px-3 py-1.5 rounded-full text-sm font-medium ${formData.tag === tag ? 'bg-[#8b5e3c] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}>
+                    {tag}
+                  </button>
+                ))}
+              </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Review Count</label>
-              <input
-                type="number"
-                name="reviews"
-                value={formData.reviews}
-                onChange={handleChange}
-                min={0}
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b5e3c]"
-                placeholder="0"
-              />
+              <label className={labelClass}>Rating (0-5)</label>
+              <input type="number" name="rating" value={formData.rating} onChange={handleChange} min={0} max={5} step={0.1} className={inputClass(false)} placeholder="0" />
+            </div>
+            <div>
+              <label className={labelClass}>Review count</label>
+              <input type="number" name="reviews" value={formData.reviews} onChange={handleChange} min={0} className={inputClass(false)} placeholder="0" />
             </div>
           </div>
         </div>
 
         {/* Features */}
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">Features (Highlights)</h2>
-          <div className="space-y-3">
+        <div>
+          <h2 className={sectionTitle}>Features (highlights)</h2>
+          <div className="space-y-2 mb-3">
             {formData.features.map((f, index) => (
-              <div key={index} className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg">
-                <span className="text-gray-700 flex-1">{f}</span>
-                <button type="button" onClick={() => handleRemoveFeature(index)} className="text-red-500 hover:text-red-700 text-sm">
-                  Remove
-                </button>
+              <div key={index} className="flex items-center gap-2 py-1.5 px-3 bg-gray-50 rounded-lg text-sm">
+                <span className="flex-1 text-gray-700">{f}</span>
+                <button type="button" onClick={() => handleRemoveFeature(index)} className="text-red-500 hover:text-red-700 text-xs">Remove</button>
               </div>
             ))}
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={newFeature}
-                onChange={(e) => setNewFeature(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddFeature())}
-                placeholder="Add feature line"
-                className="flex-1 px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b5e3c]"
-              />
-              <button type="button" onClick={handleAddFeature} className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
-                Add
-              </button>
-            </div>
+          </div>
+          <div className="flex gap-2">
+            <input type="text" value={newFeature} onChange={(e) => setNewFeature(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddFeature())} placeholder="Add feature" className={`flex-1 ${inputClass(false)}`} />
+            <button type="button" onClick={handleAddFeature} className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm">Add</button>
           </div>
         </div>
 
-        {/* Material, Color, Delivery, Warranty */}
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">Attributes</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Attributes + Dimensions */}
+        <div>
+          <h2 className={sectionTitle}>Attributes & dimensions</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Material</label>
-              <input
-                type="text"
-                name="material"
-                value={formData.material}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b5e3c]"
-                placeholder="e.g. Solid Wood"
-              />
+              <label className={labelClass}>Material</label>
+              <input type="text" name="material" value={formData.material} onChange={handleChange} className={inputClass(false)} placeholder="e.g. Solid Wood" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Color</label>
-              <input
-                type="text"
-                name="color"
-                value={formData.color}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b5e3c]"
-                placeholder="e.g. Brown"
-              />
-            </div>
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Delivery Condition</label>
-              <input
-                type="text"
-                name="deliveryCondition"
-                value={formData.deliveryCondition}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b5e3c]"
-                placeholder="e.g. Knock Down"
-              />
+              <label className={labelClass}>Color</label>
+              <input type="text" name="color" value={formData.color} onChange={handleChange} className={inputClass(false)} placeholder="e.g. Brown" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Warranty</label>
-              <input
-                type="text"
-                name="warranty"
-                value={formData.warranty}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b5e3c]"
-                placeholder="e.g. 1 year"
-              />
+              <label className={labelClass}>Warranty</label>
+              <input type="text" name="warranty" value={formData.warranty} onChange={handleChange} className={inputClass(false)} placeholder="e.g. 1 year" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Weight</label>
+              <label className={labelClass}>Delivery condition</label>
+              <input type="text" name="deliveryCondition" value={formData.deliveryCondition} onChange={handleChange} className={inputClass(false)} placeholder="e.g. Knock Down" />
+            </div>
+            <div>
+              <label className={labelClass}>Weight</label>
               <div className="flex gap-2">
-                <input
-                  type="number"
-                  name="weight"
-                  value={formData.weight}
-                  onChange={handleChange}
-                  min={0}
-                  step={0.1}
-                  className="flex-1 px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b5e3c]"
-                  placeholder="0"
-                />
-                <select
-                  name="weightUnit"
-                  value={formData.weightUnit}
-                  onChange={handleChange}
-                  className="w-20 px-2 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b5e3c]"
-                >
+                <input type="number" name="weight" value={formData.weight} onChange={handleChange} min={0} step={0.1} className={`flex-1 ${inputClass(false)}`} placeholder="0" />
+                <select name="weightUnit" value={formData.weightUnit} onChange={handleChange} className="w-16 px-2 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b5e3c] text-sm">
                   <option value="kg">kg</option>
                   <option value="g">g</option>
                 </select>
               </div>
             </div>
-          </div>
-        </div>
-
-        {/* Dimensions */}
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">Dimensions (General)</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Length</label>
-              <input
-                type="text"
-                name="dimensions.length"
-                value={formData.dimensions.length}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b5e3c]"
-              />
+              <label className={labelClass}>Length</label>
+              <input type="text" name="dimensions.length" value={formData.dimensions.length} onChange={handleChange} className={inputClass(false)} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Width</label>
-              <input
-                type="text"
-                name="dimensions.width"
-                value={formData.dimensions.width}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b5e3c]"
-              />
+              <label className={labelClass}>Width</label>
+              <input type="text" name="dimensions.width" value={formData.dimensions.width} onChange={handleChange} className={inputClass(false)} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Height</label>
-              <input
-                type="text"
-                name="dimensions.height"
-                value={formData.dimensions.height}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b5e3c]"
-              />
+              <label className={labelClass}>Height</label>
+              <input type="text" name="dimensions.height" value={formData.dimensions.height} onChange={handleChange} className={inputClass(false)} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Unit</label>
-              <select
-                name="dimensions.unit"
-                value={formData.dimensions.unit}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b5e3c]"
-              >
+              <label className={labelClass}>Unit</label>
+              <select name="dimensions.unit" value={formData.dimensions.unit} onChange={handleChange} className={inputClass(false)}>
                 <option value="cm">cm</option>
                 <option value="inch">inch</option>
               </select>
@@ -798,280 +682,145 @@ const ProductForm = () => {
           </div>
         </div>
 
-        {/* Dimension Details (nested) */}
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">Dimension Details (by variant/section)</h2>
-          <div className="space-y-4">
+        {/* Dimension Details */}
+        <div>
+          <h2 className={sectionTitle}>Dimension details (by variant)</h2>
+          <div className="space-y-3 mb-3">
             {formData.dimensionDetails.map((detail, idx) => (
-              <div key={idx} className="border border-gray-200 rounded-lg p-4">
+              <div key={idx} className="border border-gray-200 rounded-lg p-3 text-sm">
                 <div className="flex items-center justify-between mb-2">
                   <span className="font-medium text-gray-700">{detail.title || 'Untitled'}</span>
-                  <button type="button" onClick={() => handleRemoveDimensionDetail(idx)} className="text-red-500 hover:text-red-700 text-sm">
-                    Remove section
-                  </button>
+                  <button type="button" onClick={() => handleRemoveDimensionDetail(idx)} className="text-red-500 hover:text-red-700 text-xs">Remove</button>
                 </div>
                 {(detail.items || []).map((item, i) => (
-                  <div key={i} className="flex items-center gap-2 text-sm text-gray-600 py-1">
+                  <div key={i} className="flex items-center gap-2 text-gray-600 py-0.5">
                     <span>{item.label}:</span>
                     <span>{item.value}</span>
-                    <button type="button" onClick={() => handleRemoveDimensionDetailItem(idx, i)} className="text-red-500 ml-2">
-                      ×
-                    </button>
+                    <button type="button" onClick={() => handleRemoveDimensionDetailItem(idx, i)} className="text-red-500 ml-1">×</button>
                   </div>
                 ))}
                 {dimDetailItemIndex === idx && (
                   <div className="flex gap-2 mt-2">
-                    <input
-                      type="text"
-                      value={newDimDetailItem.label}
-                      onChange={(e) => setNewDimDetailItem((p) => ({ ...p, label: e.target.value }))}
-                      placeholder="Label"
-                      className="flex-1 px-3 py-1.5 border border-gray-200 rounded"
-                    />
-                    <input
-                      type="text"
-                      value={newDimDetailItem.value}
-                      onChange={(e) => setNewDimDetailItem((p) => ({ ...p, value: e.target.value }))}
-                      placeholder="Value"
-                      className="flex-1 px-3 py-1.5 border border-gray-200 rounded"
-                    />
-                    <button type="button" onClick={() => handleAddDimensionDetailItem(idx)} className="px-3 py-1.5 bg-gray-100 rounded">
-                      Add item
-                    </button>
+                    <input type="text" value={newDimDetailItem.label} onChange={(e) => setNewDimDetailItem((p) => ({ ...p, label: e.target.value }))} placeholder="Label" className={`flex-1 ${inputClass(false)} text-sm py-1.5`} />
+                    <input type="text" value={newDimDetailItem.value} onChange={(e) => setNewDimDetailItem((p) => ({ ...p, value: e.target.value }))} placeholder="Value" className={`flex-1 ${inputClass(false)} text-sm py-1.5`} />
+                    <button type="button" onClick={() => handleAddDimensionDetailItem(idx)} className="px-3 py-1.5 bg-gray-100 rounded text-sm">Add</button>
                   </div>
                 )}
                 {dimDetailItemIndex !== idx && (
-                  <button type="button" onClick={() => setDimDetailItemIndex(idx)} className="text-sm text-[#8b5e3c] hover:underline mt-2">
-                    + Add row to this section
-                  </button>
+                  <button type="button" onClick={() => setDimDetailItemIndex(idx)} className="text-sm text-[#8b5e3c] hover:underline mt-1">+ Add row</button>
                 )}
               </div>
             ))}
             <div className="flex gap-2">
-              <input
-                type="text"
-                value={newDimDetailTitle}
-                onChange={(e) => setNewDimDetailTitle(e.target.value)}
-                placeholder="Section title (e.g. Overall Dimensions)"
-                className="flex-1 px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b5e3c]"
-              />
-              <button type="button" onClick={handleAddDimensionDetail} className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
-                Add section
-              </button>
+              <input type="text" value={newDimDetailTitle} onChange={(e) => setNewDimDetailTitle(e.target.value)} placeholder="Section title" className={`flex-1 ${inputClass(false)}`} />
+              <button type="button" onClick={handleAddDimensionDetail} className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm">Add section</button>
             </div>
           </div>
         </div>
 
         {/* Policies */}
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">Product Policies</h2>
-          <div className="space-y-4">
+        <div>
+          <h2 className={sectionTitle}>Policies</h2>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Shipping</label>
-              <textarea
-                name="policies.shipping"
-                value={formData.policies.shipping}
-                onChange={handleChange}
-                rows={2}
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b5e3c]"
-              />
+              <label className={labelClass}>Shipping</label>
+              <textarea name="policies.shipping" value={formData.policies.shipping} onChange={handleChange} rows={2} className={inputClass(false)} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Warranty (policy text)</label>
-              <textarea
-                name="policies.warranty"
-                value={formData.policies.warranty}
-                onChange={handleChange}
-                rows={2}
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b5e3c]"
-              />
+              <label className={labelClass}>Warranty (policy)</label>
+              <textarea name="policies.warranty" value={formData.policies.warranty} onChange={handleChange} rows={2} className={inputClass(false)} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Cancellations</label>
-              <textarea
-                name="policies.cancellations"
-                value={formData.policies.cancellations}
-                onChange={handleChange}
-                rows={2}
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b5e3c]"
-              />
+              <label className={labelClass}>Cancellations</label>
+              <textarea name="policies.cancellations" value={formData.policies.cancellations} onChange={handleChange} rows={2} className={inputClass(false)} />
             </div>
           </div>
         </div>
 
         {/* Specifications */}
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">Specifications</h2>
-          <div className="space-y-4">
+        <div>
+          <h2 className={sectionTitle}>Specifications</h2>
+          <div className="space-y-2 mb-3">
             {formData.specifications.map((spec, index) => (
-              <div key={index} className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg">
+              <div key={index} className="flex items-center gap-3 py-1.5 px-3 bg-gray-50 rounded-lg text-sm">
                 <span className="font-medium text-gray-700">{spec.key}:</span>
-                <span className="text-gray-600">{spec.value}</span>
-                <button type="button" onClick={() => handleRemoveSpec(index)} className="ml-auto text-red-500 hover:text-red-700">
-                  Remove
-                </button>
+                <span className="text-gray-600 flex-1">{spec.value}</span>
+                <button type="button" onClick={() => handleRemoveSpec(index)} className="text-red-500 hover:text-red-700 text-xs">Remove</button>
               </div>
             ))}
-            <div className="flex gap-4">
-              <input
-                type="text"
-                value={newSpec.key}
-                onChange={(e) => setNewSpec((p) => ({ ...p, key: e.target.value }))}
-                placeholder="Key"
-                className="flex-1 px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b5e3c]"
-              />
-              <input
-                type="text"
-                value={newSpec.value}
-                onChange={(e) => setNewSpec((p) => ({ ...p, value: e.target.value }))}
-                placeholder="Value"
-                className="flex-1 px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b5e3c]"
-              />
-              <button type="button" onClick={handleAddSpec} className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
-                Add
-              </button>
+            <div className="flex gap-2">
+              <input type="text" value={newSpec.key} onChange={(e) => setNewSpec((p) => ({ ...p, key: e.target.value }))} placeholder="Key" className={inputClass(false)} />
+              <input type="text" value={newSpec.value} onChange={(e) => setNewSpec((p) => ({ ...p, value: e.target.value }))} placeholder="Value" className={inputClass(false)} />
+              <button type="button" onClick={handleAddSpec} className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm">Add</button>
             </div>
           </div>
         </div>
 
         {/* Variants */}
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">Variants (Size / Configuration)</h2>
-          <div className="space-y-4">
+        <div>
+          <h2 className={sectionTitle}>Variants (size / configuration)</h2>
+          <div className="space-y-2 mb-3">
             {formData.variants.map((variant, index) => (
-              <div key={index} className="flex flex-wrap items-center gap-3 p-3 bg-gray-50 rounded-lg">
+              <div key={index} className="flex flex-wrap items-center gap-2 p-2 bg-gray-50 rounded-lg text-sm">
                 <span className="font-medium text-gray-700">{variant.name}</span>
                 <span className="text-gray-600">₹{variant.price?.toLocaleString()}</span>
-                {variant.originalPrice && <span className="text-gray-400 line-through text-sm">₹{variant.originalPrice?.toLocaleString()}</span>}
-                {variant.dimensions && <span className="text-gray-500 text-sm">{variant.dimensions}</span>}
-                <button type="button" onClick={() => handleRemoveVariant(index)} className="ml-auto text-red-500 hover:text-red-700">
-                  Remove
-                </button>
+                {variant.originalPrice && <span className="text-gray-400 line-through">₹{variant.originalPrice?.toLocaleString()}</span>}
+                {variant.dimensions && <span className="text-gray-500">{variant.dimensions}</span>}
+                <button type="button" onClick={() => handleRemoveVariant(index)} className="ml-auto text-red-500 hover:text-red-700 text-xs">Remove</button>
               </div>
             ))}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3 items-end">
-              <input
-                type="text"
-                value={newVariant.name}
-                onChange={(e) => setNewVariant((p) => ({ ...p, name: e.target.value }))}
-                placeholder="Name (e.g. 3 Seater)"
-                className="px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b5e3c]"
-              />
-              <input
-                type="number"
-                value={newVariant.price}
-                onChange={(e) => setNewVariant((p) => ({ ...p, price: e.target.value }))}
-                placeholder="Price"
-                className="px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b5e3c]"
-              />
-              <input
-                type="number"
-                value={newVariant.originalPrice}
-                onChange={(e) => setNewVariant((p) => ({ ...p, originalPrice: e.target.value }))}
-                placeholder="Original price"
-                className="px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b5e3c]"
-              />
-              <input
-                type="text"
-                value={newVariant.dimensions}
-                onChange={(e) => setNewVariant((p) => ({ ...p, dimensions: e.target.value }))}
-                placeholder="Dimensions"
-                className="px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b5e3c]"
-              />
-              <input
-                type="text"
-                value={newVariant.image}
-                onChange={(e) => setNewVariant((p) => ({ ...p, image: e.target.value }))}
-                placeholder="Variant image URL"
-                className="px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b5e3c]"
-              />
-              <button type="button" onClick={handleAddVariant} className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 md:col-span-2">
-                Add variant
-              </button>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              <input type="text" value={newVariant.name} onChange={(e) => setNewVariant((p) => ({ ...p, name: e.target.value }))} placeholder="Name (e.g. 3 Seater)" className={inputClass(false)} />
+              <input type="number" value={newVariant.price} onChange={(e) => setNewVariant((p) => ({ ...p, price: e.target.value }))} placeholder="Price" className={inputClass(false)} />
+              <input type="number" value={newVariant.originalPrice} onChange={(e) => setNewVariant((p) => ({ ...p, originalPrice: e.target.value }))} placeholder="Original price" className={inputClass(false)} />
+              <input type="text" value={newVariant.dimensions} onChange={(e) => setNewVariant((p) => ({ ...p, dimensions: e.target.value }))} placeholder="Dimensions" className={inputClass(false)} />
+              <input type="text" value={newVariant.image} onChange={(e) => setNewVariant((p) => ({ ...p, image: e.target.value }))} placeholder="Variant image URL" className={inputClass(false)} />
+              <button type="button" onClick={handleAddVariant} className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm">Add variant</button>
             </div>
           </div>
         </div>
 
-        {/* Fabric Types */}
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">Fabric Types</h2>
-          <p className="text-sm text-gray-500 mb-2">Fabric names that can be selected for this product (e.g. KEIBA, MERRY). Must match fabric names in Fabrics list.</p>
-          <div className="flex flex-wrap gap-2 mb-3">
-            {formData.fabricTypes.map((f, i) => (
-              <span key={i} className="inline-flex items-center gap-1 px-3 py-1 bg-gray-100 rounded-full text-sm">
-                {f}
-                <button type="button" onClick={() => handleRemoveFabricType(i)} className="text-red-500 hover:text-red-700">×</button>
-              </span>
-            ))}
-          </div>
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={newFabricType}
-              onChange={(e) => setNewFabricType(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddFabricType())}
-              placeholder="Fabric name"
-              className="flex-1 px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b5e3c]"
-            />
-            <button type="button" onClick={handleAddFabricType} className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
-              Add
-            </button>
-          </div>
-          {fabrics.length > 0 && (
-            <p className="text-xs text-gray-400 mt-2">Available fabrics: {fabrics.map((f) => f.name || f).join(', ')}</p>
-          )}
-          <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-2">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Default Fabric</label>
-              <input
-                type="text"
-                name="defaultFabric"
-                value={formData.defaultFabric}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b5e3c]"
-                placeholder="e.g. KEIBA"
-              />
+        {/* Fabric Types + Status */}
+        <div>
+          <h2 className={sectionTitle}>Fabric & visibility</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="lg:col-span-3">
+              <label className={labelClass}>Fabric types</label>
+              <div className="flex flex-wrap gap-2 mb-2">
+                {formData.fabricTypes.map((f, i) => (
+                  <span key={i} className="inline-flex items-center gap-1 px-2.5 py-0.5 bg-gray-100 rounded-full text-sm">
+                    {f}
+                    <button type="button" onClick={() => handleRemoveFabricType(i)} className="text-red-500 hover:text-red-700">×</button>
+                  </span>
+                ))}
+              </div>
+              <div className="flex gap-2">
+                <input type="text" value={newFabricType} onChange={(e) => setNewFabricType(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddFabricType())} placeholder="Fabric name" className={`flex-1 ${inputClass(false)}`} />
+                <button type="button" onClick={handleAddFabricType} className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm">Add</button>
+              </div>
+              {fabrics.length > 0 && <p className="text-xs text-gray-400 mt-1">Available: {fabrics.map((f) => f.name || f).join(', ')}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Default Color (code)</label>
-              <input
-                type="text"
-                name="defaultColor"
-                value={formData.defaultColor}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b5e3c]"
-                placeholder="e.g. 901"
-              />
+              <label className={labelClass}>Default fabric</label>
+              <input type="text" name="defaultFabric" value={formData.defaultFabric} onChange={handleChange} className={inputClass(false)} placeholder="e.g. KEIBA" />
             </div>
-          </div>
-        </div>
-
-        {/* Status */}
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">Visibility</h2>
-          <div className="flex gap-6">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="radio"
-                name="status"
-                value="active"
-                checked={formData.status === 'active'}
-                onChange={handleChange}
-                className="text-[#8b5e3c] focus:ring-[#8b5e3c]"
-              />
-              <span className="text-gray-700">Active (visible on store)</span>
-            </label>
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="radio"
-                name="status"
-                value="inactive"
-                checked={formData.status === 'inactive'}
-                onChange={handleChange}
-                className="text-[#8b5e3c] focus:ring-[#8b5e3c]"
-              />
-              <span className="text-gray-700">Inactive (hidden)</span>
-            </label>
+            <div>
+              <label className={labelClass}>Default color (code)</label>
+              <input type="text" name="defaultColor" value={formData.defaultColor} onChange={handleChange} className={inputClass(false)} placeholder="e.g. 901" />
+            </div>
+            <div>
+              <label className={labelClass}>Visibility</label>
+              <div className="flex gap-4 pt-1">
+                <label className="flex items-center gap-2 cursor-pointer text-sm">
+                  <input type="radio" name="status" value="active" checked={formData.status === 'active'} onChange={handleChange} className="text-[#8b5e3c] focus:ring-[#8b5e3c]" />
+                  Active
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer text-sm">
+                  <input type="radio" name="status" value="inactive" checked={formData.status === 'inactive'} onChange={handleChange} className="text-[#8b5e3c] focus:ring-[#8b5e3c]" />
+                  Inactive
+                </label>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -1097,6 +846,7 @@ const ProductForm = () => {
           </button>
         </div>
       </form>
+      </div>
     </div>
   );
 };

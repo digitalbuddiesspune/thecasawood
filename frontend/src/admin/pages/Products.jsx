@@ -12,7 +12,6 @@ const Products = () => {
   const [selectedStatus, setSelectedStatus] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [selectedProducts, setSelectedProducts] = useState([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
 
@@ -73,33 +72,6 @@ const Products = () => {
       fetchProducts();
     } catch (error) {
       console.error('Error updating product status:', error);
-    }
-  };
-
-  const handleSelectAll = (e) => {
-    if (e.target.checked) {
-      setSelectedProducts(products.map(p => p._id));
-    } else {
-      setSelectedProducts([]);
-    }
-  };
-
-  const handleSelectProduct = (productId) => {
-    setSelectedProducts(prev => 
-      prev.includes(productId)
-        ? prev.filter(id => id !== productId)
-        : [...prev, productId]
-    );
-  };
-
-  const handleBulkDelete = async () => {
-    if (selectedProducts.length === 0) return;
-    try {
-      await adminProductsAPI.bulkDelete(selectedProducts);
-      setSelectedProducts([]);
-      fetchProducts();
-    } catch (error) {
-      console.error('Error bulk deleting products:', error);
     }
   };
 
@@ -165,18 +137,6 @@ const Products = () => {
           </select>
         </div>
 
-        {/* Bulk Actions */}
-        {selectedProducts.length > 0 && (
-          <div className="mt-4 flex items-center gap-4 p-3 bg-gray-50 rounded-lg">
-            <span className="text-sm text-gray-600">{selectedProducts.length} selected</span>
-            <button
-              onClick={handleBulkDelete}
-              className="text-sm text-red-600 hover:text-red-800"
-            >
-              Delete Selected
-            </button>
-          </div>
-        )}
       </div>
 
       {/* Products: cards on mobile, table on desktop */}
@@ -194,20 +154,14 @@ const Products = () => {
               {products.map((product) => (
                 <div key={product._id} className="p-4">
                   <div className="flex gap-3">
-                    <input
-                      type="checkbox"
-                      checked={selectedProducts.includes(product._id)}
-                      onChange={() => handleSelectProduct(product._id)}
-                      className="rounded border-gray-300 mt-1 shrink-0"
-                    />
                     <img
                       src={product.image || product.images?.[0] || '/placeholder.png'}
                       alt={product.name}
                       className="w-16 h-16 rounded-lg object-cover bg-gray-100 shrink-0"
                     />
-                    <div className="min-w-0 flex-1">
+                    <div className="min-w-0 flex-1 text-sm">
                       <p className="font-medium text-gray-900 truncate">{product.name}</p>
-                      <p className="text-sm text-gray-500">{product.category}</p>
+                      <p className="text-gray-500">{product.category}</p>
                       <p className="font-medium text-gray-900 mt-1">₹{product.price?.toLocaleString()}</p>
                       <div className="flex items-center gap-2 mt-2 flex-wrap">
                         <button
@@ -251,17 +205,9 @@ const Products = () => {
 
             {/* Desktop table */}
             <div className="hidden md:block overflow-x-auto">
-              <table className="w-full min-w-[700px]">
+              <table className="w-full min-w-[600px] text-sm">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-4 lg:px-6 py-3 text-left">
-                      <input
-                        type="checkbox"
-                        checked={selectedProducts.length === products.length && products.length > 0}
-                        onChange={handleSelectAll}
-                        className="rounded border-gray-300"
-                      />
-                    </th>
                     <th className="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Product</th>
                     <th className="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Category</th>
                     <th className="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Price</th>
@@ -274,37 +220,26 @@ const Products = () => {
                   {products.map((product) => (
                     <tr key={product._id} className="hover:bg-gray-50">
                       <td className="px-4 lg:px-6 py-4">
-                        <input
-                          type="checkbox"
-                          checked={selectedProducts.includes(product._id)}
-                          onChange={() => handleSelectProduct(product._id)}
-                          className="rounded border-gray-300"
-                        />
-                      </td>
-                      <td className="px-4 lg:px-6 py-4">
                         <div className="flex items-center gap-3">
                           <img
                             src={product.image || product.images?.[0] || '/placeholder.png'}
                             alt={product.name}
                             className="w-12 h-12 rounded-lg object-cover bg-gray-100"
                           />
-                          <div>
-                            <p className="font-medium text-gray-900">{product.name}</p>
-                            <p className="text-sm text-gray-500">SKU: {product.sku || 'N/A'}</p>
-                          </div>
+                          <p className="font-medium text-gray-900">{product.name}</p>
                         </div>
                       </td>
-                      <td className="px-4 lg:px-6 py-4 text-sm text-gray-500">{product.category}</td>
+                      <td className="px-4 lg:px-6 py-4 text-gray-500">{product.category}</td>
                       <td className="px-4 lg:px-6 py-4">
                         <div>
                           <p className="font-medium text-gray-900">₹{product.price?.toLocaleString()}</p>
                           {product.originalPrice > product.price && (
-                            <p className="text-sm text-gray-400 line-through">₹{product.originalPrice?.toLocaleString()}</p>
+                            <p className="text-gray-400 line-through">₹{product.originalPrice?.toLocaleString()}</p>
                           )}
                         </div>
                       </td>
                       <td className="px-4 lg:px-6 py-4">
-                        <span className={`text-sm ${(product.stockQuantity ?? product.stock) > 10 ? 'text-green-600' : (product.stockQuantity ?? product.stock) > 0 ? 'text-yellow-600' : 'text-red-600'}`}>
+                        <span className={`${(product.stockQuantity ?? product.stock) > 10 ? 'text-green-600' : (product.stockQuantity ?? product.stock) > 0 ? 'text-yellow-600' : 'text-red-600'}`}>
                           {product.stockQuantity ?? product.stock ?? 0} in stock
                         </span>
                       </td>
