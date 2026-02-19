@@ -64,7 +64,7 @@ router.post('/', async (req, res) => {
     }
 
     // Check if already in wishlist
-    if (wishlist.products.includes(productId)) {
+    if (wishlist.products.some((id) => id.toString() === productId)) {
       return res.status(400).json({
         success: false,
         message: 'Product already in wishlist'
@@ -133,7 +133,9 @@ router.delete('/:productId', async (req, res) => {
 router.post('/check/:productId', async (req, res) => {
   try {
     const wishlist = await Wishlist.findOne({ user: req.user._id });
-    const isInWishlist = wishlist && wishlist.products.includes(req.params.productId);
+    const isInWishlist = wishlist
+      ? wishlist.products.some((id) => id.toString() === req.params.productId)
+      : false;
 
     res.json({
       success: true,

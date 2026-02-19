@@ -27,21 +27,19 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Determine if it's a 401 and NOT a guest-allowed route
-    // Actually, guests might get 401 if logic fails, but with optionalProtect they shouldn't.
-    // However, if token is invalid, backend might return 401. 
-    // Let's keep 401 redirect BUT maybe exclude specific scenarios if needed.
-    // Ideally, with optionalProtect, guest requests don't 401. 
-    // Users with bad token might.
     if (error.response?.status === 401) {
-      // Check if it is a cart route - we don't want to redirect guests if they just have no access
-      // But optionalProtect should return 200 even for guests.
-      // If we get 401, it means strictly "Unauthorized" which shouldn't happen for public routes.
-      // So standard behavior is fine, IF backend is correct.
-      // However, if we receive 401, we remove token.
-      removeToken();
-      // Only redirect if NOT on public pages? No, global logout is safer.
-      window.location.href = '/';
+      const requestUrl = error.config?.url || '';
+      const isAuthRequest =
+        requestUrl.includes('/auth/login') ||
+        requestUrl.includes('/auth/register') ||
+        requestUrl.includes('/auth/google');
+
+      // Keep login/register errors on page; only force logout redirects
+      // for authenticated requests with an existing token.
+      if (!isAuthRequest && localStorage.getItem('token')) {
+        removeToken();
+        window.location.href = '/';
+      }
     }
     return Promise.reject(error);
   }

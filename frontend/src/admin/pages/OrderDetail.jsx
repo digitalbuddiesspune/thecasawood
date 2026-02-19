@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { adminOrdersAPI } from '../services/adminApi';
+import { downloadInvoice } from '../../utils/invoice';
 
 const OrderDetail = () => {
   const { id } = useParams();
@@ -136,6 +137,13 @@ const OrderDetail = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h1 className="text-xl font-bold text-gray-800">#{order.orderNumber}</h1>
         <div className="flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            onClick={() => downloadInvoice(order)}
+            className="px-3 py-1.5 rounded-full font-medium border border-[#8b5e3c] text-[#8b5e3c] hover:bg-[#8b5e3c] hover:text-white transition-colors"
+          >
+            Download Invoice
+          </button>
           <select
             value={order.orderStatus}
             onChange={(e) => handleStatusChange(e.target.value)}

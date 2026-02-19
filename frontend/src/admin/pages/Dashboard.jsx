@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { dashboardAPI } from '../services/adminApi';
 
 // Stats Card Component
@@ -79,12 +80,14 @@ const MonthlyOrdersChart = ({ data }) => {
 
 // Main Dashboard Component
 const Dashboard = () => {
+  const navigate = useNavigate();
   const [stats, setStats] = useState({
     todayOrders: 0,
     todayConfirmedOrders: 0,
     todayCancelledOrders: 0,
   });
   const [chartData, setChartData] = useState([]);
+  const [recentOrders, setRecentOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -100,6 +103,9 @@ const Dashboard = () => {
       ]);
       if (statsRes.data.success) setStats(statsRes.data.data);
       if (chartRes.data.success) setChartData(chartRes.data.data || []);
+
+      const recentOrdersRes = await dashboardAPI.getRecentOrders();
+      if (recentOrdersRes.data.success) setRecentOrders(recentOrdersRes.data.data || []);
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
     } finally {
@@ -159,6 +165,51 @@ const Dashboard = () => {
 
       {/* Monthly bar chart */}
       <MonthlyOrdersChart data={chartData} />
+
+      {/* Today's Recent Orders */}
+      <div className="bg-white rounded-xl shadow-sm p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-gray-800">Today's Recent Orders</h3>
+          <Link to="/admin/orders" className="text-sm text-[#8b5e3c] font-medium hover:text-[#70482d]">
+            View All Orders
+          </Link>
+        </div>
+
+        {recentOrders.length === 0 ? (
+          <div className="text-sm text-gray-500 bg-gray-50 rounded-lg p-4">
+            No orders found for today.
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[700px] text-sm">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Order ID</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Time</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Amount</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {recentOrders.map((order) => (
+                  <tr
+                    key={order._id}
+                    className="hover:bg-gray-50 cursor-pointer"
+                    onClick={() => navigate(`/admin/orders/${order._id}`)}
+                  >
+                    <td className="px-4 py-3 font-medium text-gray-900">{order.orderNumber || order._id}</td>
+                    <td className="px-4 py-3 text-gray-700">{order.user?.name || 'Guest'}</td>
+                    <td className="px-4 py-3 text-gray-600">{new Date(order.createdAt).toLocaleTimeString()}</td>
+                    <td className="px-4 py-3 font-semibold text-gray-900">₹{(order.total || 0).toLocaleString()}</td>
+                    <td className="px-4 py-3 text-gray-600 capitalize">{order.orderStatus}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

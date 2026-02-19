@@ -71,6 +71,7 @@ const Wishlist = () => {
             await wishlistAPI.remove(productId)
             setWishlistItems(prev => prev.filter(item => (item._id || item.id) !== productId))
             setSelectedItems(prev => prev.filter(id => id !== productId))
+            window.dispatchEvent(new Event('wishlistUpdated'))
         } catch (error) {
             alert(error.response?.data?.message || 'Failed to remove from wishlist')
         }
@@ -79,6 +80,7 @@ const Wishlist = () => {
     const handleAddToCart = async (productId) => {
         try {
             await cartAPI.add({ productId, quantity: 1 })
+            window.dispatchEvent(new Event('cartUpdated'))
             alert('Item added to cart!')
         } catch (error) {
             alert(error.response?.data?.message || 'Failed to add to cart')
@@ -90,6 +92,7 @@ const Wishlist = () => {
             for (const productId of selectedItems) {
                 await cartAPI.add({ productId, quantity: 1 })
             }
+            window.dispatchEvent(new Event('cartUpdated'))
             alert('Items added to cart!')
             setSelectedItems([])
         } catch (error) {
@@ -104,6 +107,7 @@ const Wishlist = () => {
             }
             setWishlistItems(prev => prev.filter(item => !selectedItems.includes(item._id || item.id)))
             setSelectedItems([])
+            window.dispatchEvent(new Event('wishlistUpdated'))
         } catch (error) {
             alert(error.response?.data?.message || 'Failed to remove items')
         }
@@ -284,11 +288,82 @@ const Wishlist = () => {
                     </div>
                 </div>
 
-                {/* Wishlist Grid - Simplified for brevity */}
-                <div className="bg-white rounded-lg shadow-sm p-6">
-                    <p className="text-center text-gray-600">
-                        Wishlist items will be displayed here
-                    </p>
+                {/* Wishlist Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+                    {filteredItems.map((item) => {
+                        const itemId = item._id || item.id
+                        const discount = item.originalPrice && item.originalPrice > item.price
+                            ? Math.round(((item.originalPrice - item.price) / item.originalPrice) * 100)
+                            : 0
+
+                        return (
+                            <div key={itemId} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                                <div className="p-3 border-b border-gray-100 flex items-center justify-between">
+                                    <label className="flex items-center gap-2 cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedItems.includes(itemId)}
+                                            onChange={() => handleSelectItem(itemId)}
+                                            className="form-checkbox h-4 w-4 text-[#8b5e3c] rounded focus:ring-[#8b5e3c]"
+                                        />
+                                        <span className="text-xs font-medium text-gray-600">Select</span>
+                                    </label>
+                                    <button
+                                        type="button"
+                                        onClick={() => handleRemoveFromWishlist(itemId)}
+                                        className="text-xs text-red-500 hover:text-red-600 font-medium"
+                                    >
+                                        Remove
+                                    </button>
+                                </div>
+
+                                <Link to={`/product/${itemId}`} className="block">
+                                    <div className="h-52 bg-gray-50 p-3">
+                                        <img
+                                            src={item.image || item.images?.[0] || '/placeholder.png'}
+                                            alt={item.name}
+                                            className="w-full h-full object-contain"
+                                        />
+                                    </div>
+                                </Link>
+
+                                <div className="p-4">
+                                    <p className="text-xs font-semibold tracking-wide text-[#8b5e3c] uppercase mb-1">
+                                        {item.category}
+                                    </p>
+                                    <Link to={`/product/${itemId}`}>
+                                        <h3 className="text-base font-semibold text-gray-900 hover:text-[#8b5e3c] transition-colors line-clamp-2 min-h-[48px]">
+                                            {item.name}
+                                        </h3>
+                                    </Link>
+
+                                    <div className="mt-3 flex items-center gap-2">
+                                        <span className="text-lg font-bold text-gray-900">₹{(item.price ?? 0).toLocaleString()}</span>
+                                        {item.originalPrice > item.price && (
+                                            <span className="text-sm text-gray-400 line-through">₹{item.originalPrice.toLocaleString()}</span>
+                                        )}
+                                        {discount > 0 && (
+                                            <span className="text-xs font-bold text-green-600">{discount}% OFF</span>
+                                        )}
+                                    </div>
+
+                                    <div className="mt-4 flex items-center justify-between">
+                                        <span className={`text-xs font-semibold ${item.inStock === false ? 'text-red-500' : 'text-green-600'}`}>
+                                            {item.inStock === false ? 'Out of Stock' : 'In Stock'}
+                                        </span>
+                                        <button
+                                            type="button"
+                                            onClick={() => handleAddToCart(itemId)}
+                                            disabled={item.inStock === false}
+                                            className="px-4 py-2 text-sm font-medium rounded-lg bg-[#8b5e3c] text-white hover:bg-[#70482d] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                        >
+                                            Add to Cart
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )
+                    })}
                 </div>
             </div>
         </div>

@@ -34,6 +34,7 @@ const AdminCategories = lazy(() => import('./admin/pages/Categories'))
 const AdminCategoryForm = lazy(() => import('./admin/pages/CategoryForm'))
 const AdminOrders = lazy(() => import('./admin/pages/Orders'))
 const AdminOrderDetail = lazy(() => import('./admin/pages/OrderDetail'))
+const AdminPayments = lazy(() => import('./admin/pages/Payments'))
 const AdminUsers = lazy(() => import('./admin/pages/Users'))
 const AdminReports = lazy(() => import('./admin/pages/Reports'))
 const AdminSettings = lazy(() => import('./admin/pages/Settings'))
@@ -85,6 +86,7 @@ const AppContent = () => {
             <Route path="categories/edit/:id" element={<AdminCategoryForm />} />
             <Route path="orders" element={<AdminOrders />} />
             <Route path="orders/:id" element={<AdminOrderDetail />} />
+            <Route path="payments" element={<AdminPayments />} />
             <Route path="users" element={<AdminUsers />} />
             <Route path="reports" element={<AdminReports />} />
             <Route path="settings" element={<AdminSettings />} />

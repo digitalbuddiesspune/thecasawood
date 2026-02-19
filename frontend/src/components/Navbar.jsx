@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { cartAPI } from '../services/api'
+import { cartAPI, wishlistAPI } from '../services/api'
 import CategoryHeader, { useNavCategories } from './CategoryHeader'
 
 const Navbar = () => {
@@ -11,6 +11,7 @@ const Navbar = () => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
     const [showUserMenu, setShowUserMenu] = useState(false)
     const [cartCount, setCartCount] = useState(0)
+    const [wishlistCount, setWishlistCount] = useState(0)
 
     // Fetch cart count
     useEffect(() => {
@@ -45,6 +46,36 @@ const Navbar = () => {
         }
     }, [isAuthenticated])
 
+    // Fetch wishlist count
+    useEffect(() => {
+        const fetchWishlistCount = async () => {
+            if (!isAuthenticated) {
+                setWishlistCount(0)
+                return
+            }
+
+            try {
+                const response = await wishlistAPI.get()
+                if (response.data.success) {
+                    setWishlistCount((response.data.data || []).length)
+                }
+            } catch (error) {
+                console.error('Error fetching wishlist count:', error)
+                setWishlistCount(0)
+            }
+        }
+
+        fetchWishlistCount()
+        window.addEventListener('wishlistUpdated', fetchWishlistCount)
+
+        const interval = setInterval(fetchWishlistCount, 10000)
+
+        return () => {
+            window.removeEventListener('wishlistUpdated', fetchWishlistCount)
+            clearInterval(interval)
+        }
+    }, [isAuthenticated])
+
 
 
     const handleLogout = () => {
@@ -71,6 +102,18 @@ const Navbar = () => {
 
                     {/* Mobile Right Icons */}
                     <div className="flex items-center space-x-2 sm:space-x-3">
+                        {/* Wishlist Icon - Mobile */}
+                        <Link to="/wishlist" className="p-1.5 sm:p-2 text-gray-600 hover:text-[#8b5e3c] relative touch-manipulation">
+                            <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                                <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                            </svg>
+                            {wishlistCount > 0 && (
+                                <span className="absolute -top-0.5 -right-0.5 bg-[#8b5e3c] text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
+                                    {wishlistCount > 9 ? '9+' : wishlistCount}
+                                </span>
+                            )}
+                        </Link>
+
                         {/* Cart Icon - Mobile */}
                         <Link to="/cart" className="p-1.5 sm:p-2 text-gray-600 hover:text-[#8b5e3c] relative touch-manipulation">
                             <svg className="w-5 h-5 sm:w-6 sm:h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -140,14 +183,6 @@ const Navbar = () => {
 
                         {/* Icons */}
                         <div className="flex items-center space-x-3">
-                            {/* Location */}
-                            <a href="#location" className="text-gray-500 hover:text-[#8b5e3c] transition-colors p-1.5">
-                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
-                                </svg>
-                            </a>
-
                             {/* User Menu */}
                             {isAuthenticated ? (
                                 <div className="relative group">
@@ -193,10 +228,15 @@ const Navbar = () => {
                             )}
 
                             {/* Wishlist */}
-                            <Link to="/wishlist" className="text-gray-500 hover:text-[#8b5e3c] transition-colors p-1.5 hidden sm:block">
+                            <Link to="/wishlist" className="text-gray-500 hover:text-[#8b5e3c] transition-colors p-1.5 relative hidden sm:block">
                                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
                                 </svg>
+                                {wishlistCount > 0 && (
+                                    <span className="absolute -top-1 -right-1 bg-[#8b5e3c] text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                                        {wishlistCount > 9 ? '9+' : wishlistCount}
+                                    </span>
+                                )}
                             </Link>
 
                             {/* Cart */}

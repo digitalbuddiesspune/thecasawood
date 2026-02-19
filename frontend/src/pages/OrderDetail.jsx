@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { ordersAPI } from '../services/api'
+import { downloadInvoice } from '../utils/invoice'
 
 const OrderDetail = () => {
     const { id } = useParams()
@@ -58,6 +59,13 @@ const OrderDetail = () => {
                     </div>
 
                     <div className="flex gap-3">
+                        <button
+                            type="button"
+                            onClick={() => downloadInvoice(order)}
+                            className="px-4 py-2 border border-[#8b5e3c] text-[#8b5e3c] rounded-lg hover:bg-[#8b5e3c] hover:text-white transition-colors text-sm font-medium"
+                        >
+                            Download Invoice
+                        </button>
                         {order.paymentStatus === 'paid' ? (
                             <span className="px-4 py-2 bg-green-100 text-green-700 font-medium rounded-full text-sm">
                                 Paid Successfully

@@ -30,8 +30,8 @@ router.get('/', optionalProtect, async (req, res) => {
     }
 
     let cart = await Cart.findOne(query)
-      .populate('items.product', 'name image price originalPrice inStock')
-      .populate('savedForLater.product', 'name image price originalPrice inStock');
+      .populate('items.product', 'name image price originalPrice inStock category')
+      .populate('savedForLater.product', 'name image price originalPrice inStock category');
 
     if (!cart) {
       // Only create if we have a valid identifier
@@ -149,8 +149,8 @@ router.post('/', optionalProtect, async (req, res) => {
     await cart.save();
 
     const updatedCart = await Cart.findById(cart._id)
-      .populate('items.product', 'name image price originalPrice inStock')
-      .populate('savedForLater.product', 'name image price originalPrice inStock');
+      .populate('items.product', 'name image price originalPrice inStock category')
+      .populate('savedForLater.product', 'name image price originalPrice inStock category');
 
     res.json({
       success: true,
@@ -212,8 +212,8 @@ router.put('/:itemId', optionalProtect, async (req, res) => {
     await cart.save();
 
     const updatedCart = await Cart.findById(cart._id)
-      .populate('items.product', 'name image price originalPrice inStock')
-      .populate('savedForLater.product', 'name image price originalPrice inStock');
+      .populate('items.product', 'name image price originalPrice inStock category')
+      .populate('savedForLater.product', 'name image price originalPrice inStock category');
 
     res.json({
       success: true,
@@ -255,8 +255,8 @@ router.delete('/:itemId', optionalProtect, async (req, res) => {
     await cart.save();
 
     const updatedCart = await Cart.findById(cart._id)
-      .populate('items.product', 'name image price originalPrice inStock')
-      .populate('savedForLater.product', 'name image price originalPrice inStock');
+      .populate('items.product', 'name image price originalPrice inStock category')
+      .populate('savedForLater.product', 'name image price originalPrice inStock category');
 
     res.json({
       success: true,
@@ -316,8 +316,8 @@ router.post('/save-for-later/:itemId', optionalProtect, async (req, res) => {
     await cart.save();
 
     const updatedCart = await Cart.findById(cart._id)
-      .populate('items.product', 'name image price originalPrice inStock')
-      .populate('savedForLater.product', 'name image price originalPrice inStock');
+      .populate('items.product', 'name image price originalPrice inStock category')
+      .populate('savedForLater.product', 'name image price originalPrice inStock category');
 
     res.json({
       success: true,
@@ -389,8 +389,8 @@ router.post('/move-to-cart/:itemId', optionalProtect, async (req, res) => {
     await cart.save();
 
     const updatedCart = await Cart.findById(cart._id)
-      .populate('items.product', 'name image price originalPrice inStock')
-      .populate('savedForLater.product', 'name image price originalPrice inStock');
+      .populate('items.product', 'name image price originalPrice inStock category')
+      .populate('savedForLater.product', 'name image price originalPrice inStock category');
 
     res.json({
       success: true,

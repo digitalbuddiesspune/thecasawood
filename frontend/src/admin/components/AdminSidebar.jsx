@@ -44,6 +44,15 @@ const menuItems = [
     ),
   },
   {
+    title: 'Payments',
+    path: '/admin/payments',
+    icon: (
+      <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a5 5 0 00-10 0v2M5 9h14a1 1 0 011 1v9a1 1 0 01-1 1H5a1 1 0 01-1-1v-9a1 1 0 011-1zm7 4h.01" />
+      </svg>
+    ),
+  },
+  {
     title: 'Users',
     path: '/admin/users',
     icon: (

@@ -178,7 +178,7 @@ const Cart = () => {
                                         const productOriginalPrice = product.originalPrice || product.price || item.price
                                         const productName = product.name || item.name
                                         const productImage = product.image || item.image
-                                        const productCategory = product.category || item.category
+                                        const productCategory = product.category || item.category || 'Uncategorized'
 
                                         return (
                                             <div key={item._id || item.id || `cart-item-${index}`} className="p-4 md:p-6 hover:bg-gray-50 transition-colors">
@@ -316,6 +316,7 @@ const Cart = () => {
                                         const productImage = product.image || item.image
                                         const productPrice = product.price || item.price
                                         const productOriginalPrice = product.originalPrice || product.price || item.price
+                                        const productCategory = product.category || item.category || 'Uncategorized'
 
                                         return (
                                             <div key={item._id || item.id || `saved-item-${index}`} className="p-4 md:p-6 hover:bg-gray-50 transition-colors">
@@ -326,6 +327,9 @@ const Cart = () => {
 
                                                     <div className="flex-1">
                                                         <h3 className="text-base font-medium text-gray-900 mb-2 line-clamp-2">{productName}</h3>
+                                                        <p className="text-xs text-gray-500 mb-2">
+                                                            Category: {productCategory} | Seller: CASAWOOD
+                                                        </p>
                                                         {item.variantName && (
                                                             <div className="mb-2 inline-block px-2 py-0.5 bg-gray-100 text-xs font-medium text-gray-700 rounded border border-gray-200">
                                                                 Size: {item.variantName}
@@ -401,6 +405,9 @@ const Cart = () => {
                                             <span className="text-gray-900">Total Amount</span>
                                             <span className="text-gray-900">₹{total.toLocaleString()}</span>
                                         </div>
+                                        <p className="mt-2 text-xs text-gray-500">
+                                            All prices are inclusive of 18% GST.
+                                        </p>
                                     </div>
 
                                     <div className="text-sm text-[#8b5e3c] font-medium bg-[#8b5e3c]/10 p-3 rounded-sm">

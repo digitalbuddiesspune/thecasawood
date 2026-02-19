@@ -76,6 +76,11 @@ export const adminOrdersAPI = {
   updatePaymentStatus: (id, status) => adminApi.patch(`/admin/orders/${id}/payment-status`, { status: String(status) }),
 };
 
+// Admin Payments API
+export const adminPaymentsAPI = {
+  getAll: (params) => adminApi.get('/admin/payments', { params }),
+};
+
 // Admin Reports API (sales, products, users; revenue/export not implemented on backend)
 export const adminReportsAPI = {
   getSalesReport: (params) => adminApi.get('/admin/reports/sales', { params }),

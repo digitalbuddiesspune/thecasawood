@@ -204,9 +204,11 @@ const ProductDetail = () => {
             if (isInWishlist) {
                 await wishlistAPI.remove(id)
                 setIsInWishlist(false)
+                window.dispatchEvent(new Event('wishlistUpdated'))
             } else {
                 await wishlistAPI.add({ productId: id })
                 setIsInWishlist(true)
+                window.dispatchEvent(new Event('wishlistUpdated'))
             }
         } catch (error) {
             alert(error.response?.data?.message || 'Failed to update wishlist')

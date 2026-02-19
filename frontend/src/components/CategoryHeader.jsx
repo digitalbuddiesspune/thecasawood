@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { categoriesAPI } from '../services/api'
 
 // Fallback nav links if API fails
-export const navLinksFallback = [
+const navLinksFallback = [
     { name: 'Beds', to: '/products?category=Beds' },
     { name: 'Coffee & Center Tables', to: '/products?category=Coffee%20%26%20Center%20Tables' },
     { name: 'Dining Tables', to: '/products?category=Dining%20Tables' },

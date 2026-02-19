@@ -30,7 +30,7 @@ const PopularCategories = () => {
         {
             id: 5,
             title: 'Lounge chair',
-            image: 'https://res.cloudinary.com/dvkxgrcbv/image/upload/v1769499030/f237b728-e210-43c5-beae-f09077038e5c.png',
+            image: 'https://res.cloudinary.com/dfl303eq8/image/upload/v1769672487/image8_zbqoxx.jpg',
             link: 'Lounge chair'
         },
     ];

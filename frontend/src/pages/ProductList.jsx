@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react'
-import { Link, useLocation } from 'react-router-dom'
-import { productsAPI } from '../services/api'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { productsAPI, wishlistAPI } from '../services/api'
+import { useAuth } from '../context/AuthContext'
 
 const ProductList = () => {
     const location = useLocation()
+    const navigate = useNavigate()
+    const { isAuthenticated } = useAuth()
 
     // Lazy init category from URL to prevent race condition on mount
     const [selectedCategory, setSelectedCategory] = useState(() => {
@@ -19,6 +22,7 @@ const ProductList = () => {
     const [error, setError] = useState(null)
     const [page, setPage] = useState(1)
     const [hasMore, setHasMore] = useState(true)
+    const [wishlistIds, setWishlistIds] = useState([])
 
     // Sync category with URL updates
     useEffect(() => {
@@ -89,6 +93,57 @@ const ProductList = () => {
         fetchProducts()
         return () => { ignore = true }
     }, [selectedCategory, sortBy, priceRange, page])
+
+    useEffect(() => {
+        if (!isAuthenticated) {
+            setWishlistIds([])
+            return
+        }
+
+        let ignore = false
+        const fetchWishlist = async () => {
+            try {
+                const response = await wishlistAPI.get()
+                if (!ignore && response.data.success) {
+                    const ids = (response.data.data || []).map((item) => item._id || item.id).filter(Boolean)
+                    setWishlistIds(ids)
+                }
+            } catch (error) {
+                if (!ignore) {
+                    console.error('Error fetching wishlist:', error)
+                }
+            }
+        }
+
+        fetchWishlist()
+        return () => { ignore = true }
+    }, [isAuthenticated])
+
+    const handleWishlistToggle = async (e, productId) => {
+        e.preventDefault()
+        e.stopPropagation()
+
+        if (!isAuthenticated) {
+            navigate('/login', { state: { from: location } })
+            return
+        }
+
+        const isInWishlist = wishlistIds.includes(productId)
+
+        try {
+            if (isInWishlist) {
+                await wishlistAPI.remove(productId)
+                setWishlistIds((prev) => prev.filter((id) => id !== productId))
+                window.dispatchEvent(new Event('wishlistUpdated'))
+            } else {
+                await wishlistAPI.add({ productId })
+                setWishlistIds((prev) => [...prev, productId])
+                window.dispatchEvent(new Event('wishlistUpdated'))
+            }
+        } catch (error) {
+            alert(error.response?.data?.message || 'Failed to update wishlist')
+        }
+    }
 
     const displayCategory = (selectedCategory || 'All').toUpperCase()
 
@@ -211,11 +266,11 @@ const ProductList = () => {
                                     {products.map((product) => (
                                         <Link to={`/product/${product._id || product.id}`} key={product._id || product.id} className="group">
                                             <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300">
-                                                <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
+                                                <div className="relative h-56 sm:h-64 overflow-hidden bg-gray-50 p-3">
                                                     <img
-                                                        src={product.image}
+                                                        src={product.image || product.images?.[0] || '/placeholder.png'}
                                                         alt={product.name}
-                                                        className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+                                                        className="w-full h-full object-contain transform group-hover:scale-105 transition-transform duration-500"
                                                     />
                                                     {product.tag && (
                                                         <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full">
@@ -233,8 +288,17 @@ const ProductList = () => {
                                                             </div>
                                                         ) : null;
                                                     })()}
-                                                    <button className="absolute bottom-4 right-4 bg-white p-2 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 hover:bg-[#8b5e3c]/10">
-                                                        <svg className="w-5 h-5 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <button
+                                                        type="button"
+                                                        onClick={(e) => handleWishlistToggle(e, product._id || product.id)}
+                                                        className="absolute bottom-4 right-4 bg-white p-2 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 hover:bg-[#8b5e3c]/10"
+                                                    >
+                                                        <svg
+                                                            className={`w-5 h-5 ${(wishlistIds.includes(product._id || product.id)) ? 'text-red-500 fill-current' : 'text-gray-900'}`}
+                                                            fill={(wishlistIds.includes(product._id || product.id)) ? 'currentColor' : 'none'}
+                                                            stroke="currentColor"
+                                                            viewBox="0 0 24 24"
+                                                        >
                                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                                                         </svg>
                                                     </button>

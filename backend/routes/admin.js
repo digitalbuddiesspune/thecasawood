@@ -90,7 +90,11 @@ router.get('/dashboard/stats', async (req, res) => {
 // Get recent orders for dashboard
 router.get('/dashboard/recent-orders', async (req, res) => {
   try {
+    const startOfToday = new Date(new Date().setHours(0, 0, 0, 0));
+    const endOfToday = new Date(new Date().setHours(23, 59, 59, 999));
+
     const orders = await Order.find()
+      .where('createdAt').gte(startOfToday).lte(endOfToday)
       .populate('user', 'name email')
       .sort({ createdAt: -1 })
       .limit(10);
@@ -734,6 +738,57 @@ router.patch('/orders/:id/payment-status', async (req, res) => {
 });
 
 // ==================== REPORTS ====================
+
+// ==================== PAYMENTS ====================
+
+// Get all payment records from orders
+router.get('/payments', async (req, res) => {
+  try {
+    const { page = 1, limit = 20, status, method, search } = req.query;
+    const query = {};
+
+    if (status) query.paymentStatus = status;
+    if (method) query.paymentMethod = method;
+    if (search) {
+      query.$or = [
+        { orderNumber: { $regex: search, $options: 'i' } },
+        { 'paymentInfo.razorpayPaymentId': { $regex: search, $options: 'i' } },
+        { 'paymentInfo.razorpayOrderId': { $regex: search, $options: 'i' } }
+      ];
+    }
+
+    const orders = await Order.find(query)
+      .populate('user', 'name email')
+      .sort({ createdAt: -1 })
+      .skip((Number(page) - 1) * Number(limit))
+      .limit(Number(limit));
+
+    const total = await Order.countDocuments(query);
+
+    res.json({
+      success: true,
+      data: {
+        payments: orders.map((order) => ({
+          _id: order._id,
+          orderNumber: order.orderNumber,
+          amount: order.total,
+          paymentMethod: order.paymentMethod,
+          paymentStatus: order.paymentStatus,
+          transactionId: order.paymentInfo?.razorpayPaymentId || null,
+          gatewayOrderId: order.paymentInfo?.razorpayOrderId || null,
+          gatewayStatus: order.paymentInfo?.status || null,
+          customer: order.user || null,
+          createdAt: order.createdAt
+        })),
+        totalPages: Math.ceil(total / Number(limit)),
+        currentPage: Number(page),
+        total
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
 
 // Sales report
 router.get('/reports/sales', async (req, res) => {
