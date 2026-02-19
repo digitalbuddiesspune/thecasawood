@@ -97,6 +97,8 @@ export const ordersAPI = {
   getMyOrders: () => api.get('/orders'),
   getById: (id) => api.get(`/orders/${id}`),
   create: (data) => api.post('/orders', data),
+  createRazorpayOrder: (data) => api.post('/orders/create-razorpay-order', data),
+  verifyPayment: (data) => api.post('/orders/verify-payment', data),
   track: (orderNumber) => api.get(`/orders/track/${orderNumber}`)
 };
 

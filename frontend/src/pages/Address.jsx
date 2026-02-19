@@ -20,6 +20,7 @@ const Address = () => {
 
     // UI Selection States
     const [selectedAddressId, setSelectedAddressId] = useState(null) // Renamed for clarity
+    const [paymentMethod, setPaymentMethod] = useState('COD') // COD | Online
     const [showAddressForm, setShowAddressForm] = useState(false)
     const [editingAddress, setEditingAddress] = useState(null)
 
@@ -204,8 +205,23 @@ const Address = () => {
     }
 
     // ==========================================
-    // 4. Place Order (COD)
+    // 4. Place Order (COD or Razorpay)
     // ==========================================
+    const loadRazorpayScript = () => {
+        return new Promise((resolve) => {
+            if (window.Razorpay) {
+                resolve()
+                return
+            }
+            const script = document.createElement('script')
+            script.src = 'https://checkout.razorpay.com/v1/checkout.js'
+            script.async = true
+            script.onload = () => resolve()
+            script.onerror = () => resolve() // Resolve anyway to avoid hanging
+            document.body.appendChild(script)
+        })
+    }
+
     const handlePlaceOrder = async () => {
         if (!selectedAddressId) {
             alert('Please select a delivery address first')
@@ -213,14 +229,77 @@ const Address = () => {
         }
         try {
             setProcessing(true)
-            const response = await ordersAPI.create({
-                shippingAddressId: selectedAddressId,
-                paymentMethod: 'COD'
-            })
-            if (response.data.success) {
-                window.dispatchEvent(new Event('cartUpdated'))
-                navigate(`/order-success/${response.data.data._id}`)
+
+            if (paymentMethod === 'COD') {
+                const response = await ordersAPI.create({
+                    shippingAddressId: selectedAddressId,
+                    paymentMethod: 'COD'
+                })
+                if (response.data.success) {
+                    window.dispatchEvent(new Event('cartUpdated'))
+                    navigate(`/order-success/${response.data.data._id}`)
+                }
+                return
             }
+
+            // Razorpay (Online) flow
+            const createRes = await ordersAPI.createRazorpayOrder({
+                shippingAddressId: selectedAddressId,
+                notes: ''
+            })
+            if (!createRes.data.success) {
+                alert(createRes.data.message || 'Failed to initiate payment')
+                return
+            }
+
+            const { orderId, razorpayOrderId, amount, key } = createRes.data.data
+
+            await loadRazorpayScript()
+            if (!window.Razorpay) {
+                alert('Payment gateway failed to load. Please try again.')
+                return
+            }
+
+            const options = {
+                key,
+                amount,
+                currency: 'INR',
+                order_id: razorpayOrderId,
+                name: 'The Casawood',
+                description: 'Furniture Order Payment',
+                handler: async (response) => {
+                    try {
+                        setProcessing(true)
+                        const verifyRes = await ordersAPI.verifyPayment({
+                            orderId,
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_payment_id: response.razorpay_payment_id,
+                            razorpay_signature: response.razorpay_signature
+                        })
+                        if (verifyRes.data.success) {
+                            window.dispatchEvent(new Event('cartUpdated'))
+                            navigate(`/order-success/${verifyRes.data.data._id}`)
+                        } else {
+                            alert(verifyRes.data.message || 'Payment verification failed')
+                        }
+                    } catch (err) {
+                        alert(err.response?.data?.message || 'Payment verification failed')
+                    } finally {
+                        setProcessing(false)
+                    }
+                },
+                prefill: {
+                    name: user?.name || '',
+                    email: user?.email || ''
+                },
+                theme: { color: '#8b5e3c' }
+            }
+
+            const rzp = new window.Razorpay(options)
+            rzp.on('payment.failed', (res) => {
+                alert(res.error?.description || 'Payment failed. Please try again.')
+            })
+            rzp.open()
         } catch (error) {
             alert(error.response?.data?.message || 'Failed to place order')
         } finally {
@@ -404,23 +483,45 @@ const Address = () => {
                             </div>
                         </section>
 
-                        {/* ---------------- STEP 2: PLACE ORDER ---------------- */}
+                        {/* ---------------- STEP 2: PAYMENT & PLACE ORDER ---------------- */}
                         <section className={`bg-white rounded-lg shadow-sm border border-gray-100 transition-opacity ${!selectedAddressId ? 'opacity-50 pointer-events-none grayscale' : 'opacity-100'}`}>
                             <div className="bg-gray-50 px-6 py-4 border-b border-gray-100">
                                 <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
                                     <span className="flex items-center justify-center w-6 h-6 bg-[#8b5e3c] text-white text-xs rounded-full">2</span>
-                                    Place Order
+                                    Payment & Place Order
                                 </h2>
                             </div>
 
-                            <div className="p-6">
-                                {!selectedAddressId && <p className="text-sm text-red-500 mb-4">* Select an address above to proceed</p>}
+                            <div className="p-6 space-y-5">
+                                {!selectedAddressId && <p className="text-sm text-red-500">* Select an address above to proceed</p>}
+
+                                {/* Payment Method */}
+                                <div>
+                                    <p className="text-sm font-semibold text-gray-700 mb-3">Select Payment Method</p>
+                                    <div className="flex flex-col gap-3">
+                                        <label className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-all ${paymentMethod === 'COD' ? 'border-[#8b5e3c] bg-[#8b5e3c]/5' : 'border-gray-200 hover:border-gray-300'}`}>
+                                            <input type="radio" name="paymentMethod" value="COD" checked={paymentMethod === 'COD'} onChange={() => setPaymentMethod('COD')} className="text-[#8b5e3c] focus:ring-[#8b5e3c]" />
+                                            <div>
+                                                <span className="font-medium text-gray-800">Cash on Delivery (COD)</span>
+                                                <p className="text-xs text-gray-500 mt-0.5">Pay when your order is delivered</p>
+                                            </div>
+                                        </label>
+                                        <label className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-all ${paymentMethod === 'Online' ? 'border-[#8b5e3c] bg-[#8b5e3c]/5' : 'border-gray-200 hover:border-gray-300'}`}>
+                                            <input type="radio" name="paymentMethod" value="Online" checked={paymentMethod === 'Online'} onChange={() => setPaymentMethod('Online')} className="text-[#8b5e3c] focus:ring-[#8b5e3c]" />
+                                            <div>
+                                                <span className="font-medium text-gray-800">Pay Online (Razorpay)</span>
+                                                <p className="text-xs text-gray-500 mt-0.5">Card, UPI, Net Banking & more</p>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+
                                 <button
                                     onClick={handlePlaceOrder}
                                     disabled={processing || !selectedAddressId}
                                     className="w-full max-w-sm bg-[#8b5e3c] text-white font-bold py-3 px-6 rounded hover:bg-[#70482d] transition-all shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed"
                                 >
-                                    {processing ? 'Placing Order...' : `PLACE ORDER - ₹${totalAmount.toLocaleString()}`}
+                                    {processing ? 'Processing...' : paymentMethod === 'Online' ? `PAY ₹${totalAmount.toLocaleString()} & PLACE ORDER` : `PLACE ORDER - ₹${totalAmount.toLocaleString()}`}
                                 </button>
                             </div>
                         </section>
