@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { adminUsersAPI } from '../services/adminApi';
+import { getDisplayOrderId } from '../../utils/orderId';
 
 const Users = () => {
   const [users, setUsers] = useState([]);
@@ -349,7 +350,7 @@ const Users = () => {
                       >
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="font-medium text-gray-900">{order.orderNumber}</p>
+                            <p className="font-medium text-gray-900">{getDisplayOrderId(order)}</p>
                             <p className="text-sm text-gray-500">
                               {new Date(order.createdAt).toLocaleDateString('en-IN')}
                             </p>

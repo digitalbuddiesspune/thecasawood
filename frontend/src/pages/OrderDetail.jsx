@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { ordersAPI } from '../services/api'
 import { downloadInvoice } from '../utils/invoice'
+import { getDisplayOrderId } from '../utils/orderId'
 
 const OrderDetail = () => {
     const { id } = useParams()
@@ -55,7 +56,7 @@ const OrderDetail = () => {
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
                     <div>
                         <h1 className="text-2xl font-bold text-gray-900">Order Details</h1>
-                        <p className="text-gray-500 text-sm mt-1">Order ID: {order.orderNumber || order._id}</p>
+                        <p className="text-gray-500 text-sm mt-1">Order ID: {getDisplayOrderId(order)}</p>
                     </div>
 
                     <div className="flex gap-3">

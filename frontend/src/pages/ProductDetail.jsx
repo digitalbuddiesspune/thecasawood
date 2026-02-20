@@ -92,6 +92,9 @@ const ProductDetail = () => {
     const [quantity, setQuantity] = useState(1)
     const [isInWishlist, setIsInWishlist] = useState(false)
     const [addingToCart, setAddingToCart] = useState(false)
+    const [reviewRating, setReviewRating] = useState(5)
+    const [reviewComment, setReviewComment] = useState('')
+    const [submittingReview, setSubmittingReview] = useState(false)
 
     // Fetch product and fabrics from API
     useEffect(() => {
@@ -212,6 +215,35 @@ const ProductDetail = () => {
             }
         } catch (error) {
             alert(error.response?.data?.message || 'Failed to update wishlist')
+        }
+    }
+
+    const handleSubmitReview = async () => {
+        if (!isAuthenticated) {
+            navigate('/login', { state: { from: location } })
+            return
+        }
+
+        if (!reviewComment.trim()) {
+            alert('Please write a review comment')
+            return
+        }
+
+        try {
+            setSubmittingReview(true)
+            const response = await productsAPI.addReview(id, {
+                rating: Number(reviewRating),
+                comment: reviewComment.trim()
+            })
+            if (response.data.success) {
+                setProduct(response.data.data)
+                setReviewComment('')
+                setReviewRating(5)
+            }
+        } catch (error) {
+            alert(error.response?.data?.message || 'Failed to submit review')
+        } finally {
+            setSubmittingReview(false)
         }
     }
 
@@ -661,7 +693,40 @@ const ProductDetail = () => {
                         <div className="border border-gray-200 rounded-sm mb-6">
                             <div className="px-5 py-4 border-b border-gray-200 flex justify-between items-center">
                                 <h2 className="text-xl font-medium text-gray-800">Ratings & Reviews</h2>
-                                <button className="px-5 py-2 bg-white shadow border border-[#8b5e3c] text-sm font-medium text-[#8b5e3c] hover:bg-[#8b5e3c] hover:text-white transition-colors hover:shadow-md">Rate Product</button>
+                                <button
+                                    type="button"
+                                    onClick={handleSubmitReview}
+                                    disabled={submittingReview}
+                                    className="px-5 py-2 bg-white shadow border border-[#8b5e3c] text-sm font-medium text-[#8b5e3c] hover:bg-[#8b5e3c] hover:text-white transition-colors hover:shadow-md disabled:opacity-50"
+                                >
+                                    {submittingReview ? 'Submitting...' : 'Submit Review'}
+                                </button>
+                            </div>
+                            <div className="px-5 pt-4 pb-2 border-b border-gray-100">
+                                <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+                                    <div className="md:col-span-1">
+                                        <label className="text-sm text-gray-600 mb-1 block">Your Rating</label>
+                                        <select
+                                            value={reviewRating}
+                                            onChange={(e) => setReviewRating(Number(e.target.value))}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                                        >
+                                            {[5, 4, 3, 2, 1].map((r) => (
+                                                <option key={r} value={r}>{r} Star{r > 1 ? 's' : ''}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="md:col-span-3">
+                                        <label className="text-sm text-gray-600 mb-1 block">Your Review</label>
+                                        <textarea
+                                            value={reviewComment}
+                                            onChange={(e) => setReviewComment(e.target.value)}
+                                            rows={2}
+                                            placeholder="Write your review here..."
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm resize-none"
+                                        />
+                                    </div>
+                                </div>
                             </div>
                             <div className="p-6 flex flex-col md:flex-row gap-8">
                                 <div className="flex flex-col items-center justify-center w-full md:w-32 border-r-0 md:border-r border-gray-200 pr-0 md:pr-4">
@@ -687,6 +752,25 @@ const ProductDetail = () => {
                                         </div>
                                     ))}
                                 </div>
+                            </div>
+                            <div className="px-6 pb-6">
+                                <h3 className="text-sm font-semibold text-gray-700 mb-3">Customer Reviews</h3>
+                                {(product.reviewList && product.reviewList.length > 0) ? (
+                                    <div className="space-y-3">
+                                        {product.reviewList.slice().reverse().map((review) => (
+                                            <div key={review._id} className="border border-gray-200 rounded-md p-3">
+                                                <div className="flex items-center justify-between mb-1">
+                                                    <p className="text-sm font-semibold text-gray-900">{review.name || review.user?.name || 'User'}</p>
+                                                    <p className="text-xs text-amber-500 font-bold">{'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}</p>
+                                                </div>
+                                                <p className="text-sm text-gray-700">{review.comment}</p>
+                                                <p className="text-xs text-gray-400 mt-1">{new Date(review.createdAt).toLocaleDateString('en-IN')}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <p className="text-sm text-gray-500">No reviews yet. Be the first to review this product.</p>
+                                )}
                             </div>
                         </div>
 

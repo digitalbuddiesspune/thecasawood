@@ -88,13 +88,9 @@ const Footer = () => {
                 </div>
 
                 {/* Bottom Bar */}
-                <div className="border-t border-[#5c4033] pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-400">
+                <div className="border-t border-[#5c4033] pt-8 flex flex-col md:flex-row justify-center items-center text-sm text-gray-400">
                     <p>&copy; {new Date().getFullYear()} TheCasaWood. All rights reserved.</p>
-                    <div className="flex space-x-6 mt-4 md:mt-0">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" className="h-6 opacity-60 grayscale hover:grayscale-0 transition-all" />
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" className="h-6 opacity-60 grayscale hover:grayscale-0 transition-all" />
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" className="h-6 opacity-60 grayscale hover:grayscale-0 transition-all" />
-                    </div>
+                   
                 </div>
             </div>
         </footer>

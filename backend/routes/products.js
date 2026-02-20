@@ -1,5 +1,6 @@
 import express from 'express';
 import Product from '../models/Product.js';
+import { protect } from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -100,7 +101,8 @@ router.get('/', async (req, res) => {
 // @access  Public
 router.get('/:id', async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id);
+    const product = await Product.findById(req.params.id)
+      .populate('reviewList.user', 'name');
 
     if (!product || !product.isActive) {
       return res.status(404).json({
@@ -121,6 +123,79 @@ router.get('/:id', async (req, res) => {
         message: 'Product not found'
       });
     }
+    res.status(500).json({
+      success: false,
+      message: 'Server error'
+    });
+  }
+});
+
+// @route   POST /api/products/:id/reviews
+// @desc    Add or update product review
+// @access  Private
+router.post('/:id/reviews', protect, async (req, res) => {
+  try {
+    const { rating, comment } = req.body;
+
+    if (!rating || rating < 1 || rating > 5) {
+      return res.status(400).json({
+        success: false,
+        message: 'Rating must be between 1 and 5'
+      });
+    }
+
+    if (!comment || !comment.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Review comment is required'
+      });
+    }
+
+    const product = await Product.findById(req.params.id);
+    if (!product || !product.isActive) {
+      return res.status(404).json({
+        success: false,
+        message: 'Product not found'
+      });
+    }
+
+    const existingReviewIndex = product.reviewList.findIndex(
+      (r) => r.user.toString() === req.user._id.toString()
+    );
+
+    if (existingReviewIndex !== -1) {
+      product.reviewList[existingReviewIndex].rating = Number(rating);
+      product.reviewList[existingReviewIndex].comment = comment.trim();
+      product.reviewList[existingReviewIndex].name = req.user.name;
+    } else {
+      product.reviewList.push({
+        user: req.user._id,
+        name: req.user.name,
+        rating: Number(rating),
+        comment: comment.trim()
+      });
+    }
+
+    const reviewCount = product.reviewList.length;
+    const avgRating = reviewCount
+      ? product.reviewList.reduce((sum, r) => sum + r.rating, 0) / reviewCount
+      : 0;
+
+    product.reviews = reviewCount;
+    product.rating = Number(avgRating.toFixed(1));
+
+    await product.save();
+
+    const updatedProduct = await Product.findById(req.params.id)
+      .populate('reviewList.user', 'name');
+
+    res.json({
+      success: true,
+      data: updatedProduct,
+      message: existingReviewIndex !== -1 ? 'Review updated successfully' : 'Review added successfully'
+    });
+  } catch (error) {
+    console.error('Add review error:', error);
     res.status(500).json({
       success: false,
       message: 'Server error'

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import * as XLSX from 'xlsx';
 import { adminOrdersAPI } from '../services/adminApi';
+import { getDisplayOrderId } from '../../utils/orderId';
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
@@ -105,7 +106,7 @@ const Orders = () => {
           'Payment Method',
         ],
         ...list.map((order) => [
-          order.orderNumber || order._id,
+          getDisplayOrderId(order),
           order.user?.name || order.shippingAddress?.name || 'Guest',
           order.user?.email || '—',
           order.user?.phone || '—',
@@ -251,7 +252,7 @@ const Orders = () => {
                     <tr key={order._id} className="hover:bg-gray-50">
                       <td className="px-4 lg:px-6 py-3">
                         <Link to={`/admin/orders/${order._id}`} className="text-[#8b5e3c] font-medium hover:underline">
-                          {order.orderNumber}
+                          {getDisplayOrderId(order)}
                         </Link>
                       </td>
                       <td className="px-4 lg:px-6 py-3">

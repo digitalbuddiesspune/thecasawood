@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { adminPaymentsAPI } from '../services/adminApi';
+import { getDisplayOrderId } from '../../utils/orderId';
 
 const Payments = () => {
   const [payments, setPayments] = useState([]);
@@ -116,7 +117,7 @@ const Payments = () => {
               <tbody className="divide-y divide-gray-100">
                 {payments.map((payment) => (
                   <tr key={payment._id} className="hover:bg-gray-50">
-                    <td className="px-4 py-4 font-medium text-gray-900">{payment.orderNumber || payment._id}</td>
+                    <td className="px-4 py-4 font-medium text-gray-900">{getDisplayOrderId(payment)}</td>
                     <td className="px-4 py-4">
                       <p className="font-medium text-gray-900">{payment.customer?.name || 'Guest'}</p>
                       <p className="text-xs text-gray-500">{payment.customer?.email || '-'}</p>

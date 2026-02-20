@@ -318,11 +318,11 @@ const Wishlist = () => {
                                 </div>
 
                                 <Link to={`/product/${itemId}`} className="block">
-                                    <div className="h-52 bg-gray-50 p-3">
+                                    <div className="h-64 bg-gray-50 p-3">
                                         <img
                                             src={item.image || item.images?.[0] || '/placeholder.png'}
                                             alt={item.name}
-                                            className="w-full h-full object-contain"
+                                            className="w-full h-full object-cover object-center"
                                         />
                                     </div>
                                 </Link>

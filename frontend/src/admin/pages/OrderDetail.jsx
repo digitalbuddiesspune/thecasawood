@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { adminOrdersAPI } from '../services/adminApi';
 import { downloadInvoice } from '../../utils/invoice';
+import { getDisplayOrderId } from '../../utils/orderId';
 
 const OrderDetail = () => {
   const { id } = useParams();
@@ -63,6 +64,13 @@ const OrderDetail = () => {
     return found?.color || 'bg-gray-100 text-gray-800';
   };
 
+  const getPaymentStatusMeta = (status) => {
+    if (status === 'paid') return { label: 'Paid', className: 'bg-green-100 text-green-800 border-green-200' };
+    if (status === 'refunded') return { label: 'Refunded', className: 'bg-blue-100 text-blue-800 border-blue-200' };
+    if (status === 'failed') return { label: 'Failed', className: 'bg-red-100 text-red-800 border-red-200' };
+    return { label: 'Unpaid', className: 'bg-yellow-100 text-yellow-800 border-yellow-200' };
+  };
+
   const formatDate = (d) =>
     d
       ? new Date(d).toLocaleDateString('en-IN', {
@@ -118,7 +126,7 @@ const OrderDetail = () => {
   const customerName = order.user?.name || order.shippingAddress?.name || 'Guest';
   const email = order.user?.email || order.shippingAddress?.email || 'N/A';
   const phone = order.user?.phone || order.shippingAddress?.phone || '—';
-  const isPaid = order.paymentStatus === 'paid';
+  const paymentStatusMeta = getPaymentStatusMeta(order.paymentStatus);
 
   return (
     <div className="space-y-6 text-sm">
@@ -135,7 +143,7 @@ const OrderDetail = () => {
 
       {/* Header: Order ID + Status dropdowns */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h1 className="text-xl font-bold text-gray-800">#{order.orderNumber}</h1>
+        <h1 className="text-xl font-bold text-gray-800">#{getDisplayOrderId(order)}</h1>
         <div className="flex flex-wrap items-center gap-3">
           <button
             type="button"
@@ -147,7 +155,7 @@ const OrderDetail = () => {
           <select
             value={order.orderStatus}
             onChange={(e) => handleStatusChange(e.target.value)}
-            disabled={updating}
+            disabled={updating || order.orderStatus === 'delivered'}
             className={`px-3 py-1.5 rounded-full font-medium border cursor-pointer ${getStatusColor(order.orderStatus)}`}
           >
             {orderStatuses.map((s) => (
@@ -158,12 +166,11 @@ const OrderDetail = () => {
             value={order.paymentStatus}
             onChange={(e) => handlePaymentStatusChange(e.target.value)}
             disabled={updating}
-            className={`px-3 py-1.5 rounded-full font-medium border cursor-pointer ${
-              isPaid ? 'bg-green-100 text-green-800 border-green-200' : 'bg-yellow-100 text-yellow-800 border-yellow-200'
-            }`}
+            className={`px-3 py-1.5 rounded-full font-medium border cursor-pointer ${paymentStatusMeta.className}`}
           >
             <option value="pending">Unpaid</option>
             <option value="paid">Paid</option>
+            <option value="refunded">Refunded</option>
           </select>
         </div>
       </div>
@@ -223,7 +230,7 @@ const OrderDetail = () => {
           </div>
           <div>
             <p className="text-gray-500 uppercase text-xs">Display Order ID</p>
-            <p className="font-medium text-gray-900">#{order.orderNumber}</p>
+            <p className="font-medium text-gray-900">#{getDisplayOrderId(order)}</p>
           </div>
           <div>
             <p className="text-gray-500 uppercase text-xs">Customer name</p>
@@ -239,8 +246,8 @@ const OrderDetail = () => {
           </div>
           <div>
             <p className="text-gray-500 uppercase text-xs">Payment status</p>
-            <span className={`inline-block px-2 py-0.5 rounded font-medium ${isPaid ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
-              {isPaid ? 'Paid' : 'Unpaid'}
+            <span className={`inline-block px-2 py-0.5 rounded font-medium ${paymentStatusMeta.className}`}>
+              {paymentStatusMeta.label}
             </span>
           </div>
           <div>

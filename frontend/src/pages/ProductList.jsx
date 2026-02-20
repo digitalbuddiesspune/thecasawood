@@ -266,11 +266,11 @@ const ProductList = () => {
                                     {products.map((product) => (
                                         <Link to={`/product/${product._id || product.id}`} key={product._id || product.id} className="group">
                                             <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300">
-                                                <div className="relative h-56 sm:h-64 overflow-hidden bg-gray-50 p-3">
+                                                <div className="relative h-64 sm:h-72 overflow-hidden bg-gray-50 p-3">
                                                     <img
                                                         src={product.image || product.images?.[0] || '/placeholder.png'}
                                                         alt={product.name}
-                                                        className="w-full h-full object-contain transform group-hover:scale-105 transition-transform duration-500"
+                                                        className="w-full h-full object-cover object-center transform group-hover:scale-105 transition-transform duration-500"
                                                     />
                                                     {product.tag && (
                                                         <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full">

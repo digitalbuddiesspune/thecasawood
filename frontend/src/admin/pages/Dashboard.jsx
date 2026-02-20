@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { dashboardAPI } from '../services/adminApi';
+import { getDisplayOrderId } from '../../utils/orderId';
 
 // Stats Card Component
 const StatsCard = ({ title, value, icon, trend, trendValue, color }) => {
@@ -198,7 +199,7 @@ const Dashboard = () => {
                     className="hover:bg-gray-50 cursor-pointer"
                     onClick={() => navigate(`/admin/orders/${order._id}`)}
                   >
-                    <td className="px-4 py-3 font-medium text-gray-900">{order.orderNumber || order._id}</td>
+                    <td className="px-4 py-3 font-medium text-gray-900">{getDisplayOrderId(order)}</td>
                     <td className="px-4 py-3 text-gray-700">{order.user?.name || 'Guest'}</td>
                     <td className="px-4 py-3 text-gray-600">{new Date(order.createdAt).toLocaleTimeString()}</td>
                     <td className="px-4 py-3 font-semibold text-gray-900">₹{(order.total || 0).toLocaleString()}</td>

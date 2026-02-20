@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { ordersAPI } from '../services/api'
 import { useAuth } from '../context/AuthContext'
+import { getDisplayOrderId } from '../utils/orderId'
 
 const Orders = () => {
     const { isAuthenticated } = useAuth()
@@ -89,7 +90,7 @@ const Orders = () => {
                                                             'bg-blue-100 text-blue-700'}`}>
                                                     {order.orderStatus}
                                                 </span>
-                                                <span className="text-sm text-gray-500">Order #{order._id.slice(-8).toUpperCase()}</span>
+                                                <span className="text-sm text-gray-500">Order #{getDisplayOrderId(order)}</span>
                                             </div>
                                             <p className="text-xs text-gray-400">Placed on {new Date(order.createdAt).toLocaleDateString('en-IN', {
                                                 day: 'numeric', month: 'long', year: 'numeric'

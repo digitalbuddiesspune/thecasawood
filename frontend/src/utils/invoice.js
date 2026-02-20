@@ -1,9 +1,12 @@
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
+
 const STORE_INFO = {
   name: 'THECASAWOOD',
   tagline: 'Premium Wooden Furniture',
-  location: 'Pune, Maharashtra, India',
+  location: 'Nagpur, Maharashtra, India',
   email: 'support@thecasawood.com',
-  phone: '+91 98765 43210',
+  phone: '9156746451',
 };
 
 const GST_RATE = 0.18;
@@ -28,15 +31,19 @@ const formatDateTime = (value) =>
       })
     : '-';
 
-const formatMoney = (value) => `₹${Number(value || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+const formatMoney = (value) => `Rs ${Number(value || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
-const safe = (value) =>
-  String(value ?? '')
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#39;');
+const getDisplayOrderId = (order) => {
+  if (order?.orderNumber && String(order.orderNumber).trim()) {
+    return String(order.orderNumber).trim();
+  }
+
+  if (order?._id) {
+    return `ORD-${String(order._id).slice(-8).toUpperCase()}`;
+  }
+
+  return 'ORD-NA';
+};
 
 const numberToWords = (num) => {
   const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
@@ -79,7 +86,13 @@ const numberToWords = (num) => {
 export const downloadInvoice = (order) => {
   if (!order) return;
 
-  const orderId = order.orderNumber || order._id || '-';
+  const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const left = 40;
+  const right = pageWidth - 40;
+  const contentWidth = right - left;
+
+  const orderId = getDisplayOrderId(order);
   const invoiceNo = `INV-${orderId}`;
   const orderDate = order.createdAt;
   const invoiceDate = new Date();
@@ -112,139 +125,129 @@ export const downloadInvoice = (order) => {
   const sgst = gstAmount / 2;
   const cgst = gstAmount / 2;
 
-  const rows = items
-    .map((item, index) => {
-      const qty = Number(item.quantity || 0);
-      const rate = Number(item.price || 0);
-      const lineTotal = qty * rate;
-      const lineTaxable = lineTotal / (1 + GST_RATE);
-      const lineGst = lineTotal - lineTaxable;
-      return `
-        <tr>
-          <td>${index + 1}</td>
-          <td>${safe(item.name || item.product?.name || 'Item')}</td>
-          <td>${qty}</td>
-          <td>${formatMoney(rate)}</td>
-          <td>${formatMoney(lineTaxable)}</td>
-          <td>18%</td>
-          <td>${formatMoney(lineGst)}</td>
-          <td>${formatMoney(lineTotal)}</td>
-        </tr>
-      `;
-    })
-    .join('');
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(22);
+  doc.setTextColor(139, 94, 60);
+  doc.text(STORE_INFO.name, pageWidth / 2, 44, { align: 'center' });
 
-  const html = `
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <title>Invoice ${safe(invoiceNo)}</title>
-    <style>
-      body { font-family: Arial, sans-serif; color: #1f2937; margin: 24px; }
-      h1, h2, h3, p { margin: 0; }
-      .center { text-align: center; }
-      .top-title { font-size: 30px; color: #8b5e3c; font-weight: 800; letter-spacing: 1px; }
-      .muted { color: #4b5563; font-size: 13px; }
-      .section { margin-top: 16px; border: 1px solid #d1d5db; }
-      .section-title { background: #111827; color: #fff; font-weight: 700; padding: 8px 10px; font-size: 14px; }
-      .meta-grid { width: 100%; border-collapse: collapse; }
-      .meta-grid td { border: 1px solid #d1d5db; padding: 7px 10px; font-size: 13px; }
-      .meta-grid td:first-child { width: 240px; color: #4b5563; }
-      .items-table { width: 100%; border-collapse: collapse; }
-      .items-table th, .items-table td { border: 1px solid #d1d5db; padding: 7px; font-size: 13px; text-align: left; }
-      .items-table th { background: #f3f4f6; font-weight: 700; }
-      .items-table td:nth-child(1), .items-table td:nth-child(3), .items-table td:nth-child(6) { text-align: center; }
-      .totals { width: 420px; margin-left: auto; margin-top: 12px; border-collapse: collapse; }
-      .totals td { border: 1px solid #d1d5db; padding: 7px 10px; font-size: 13px; }
-      .totals tr:last-child td { background: #111827; color: #fff; font-size: 18px; font-weight: 700; }
-      .words { margin-top: 14px; font-size: 14px; }
-      @media print { body { margin: 10mm; } }
-    </style>
-  </head>
-  <body>
-    <div class="center">
-      <div class="top-title">${safe(STORE_INFO.name)}</div>
-      <div style="font-size: 24px; font-weight: 800; margin-top: 6px;">TAX INVOICE</div>
-      <p class="muted" style="margin-top: 6px;">
-        ${safe(STORE_INFO.tagline)} | ${safe(STORE_INFO.location)} | Email: ${safe(STORE_INFO.email)} | Phone: ${safe(STORE_INFO.phone)}
-      </p>
-    </div>
+  doc.setFontSize(18);
+  doc.setTextColor(17, 24, 39);
+  doc.text('TAX INVOICE', pageWidth / 2, 68, { align: 'center' });
 
-    <div class="section">
-      <div class="section-title">Invoice Details</div>
-      <table class="meta-grid">
-        <tr><td>Invoice No</td><td><b>${safe(invoiceNo)}</b></td></tr>
-        <tr><td>Order ID</td><td><b>${safe(orderId)}</b></td></tr>
-        <tr><td>Order Date</td><td>${formatDate(orderDate)}</td></tr>
-        <tr><td>Invoice Date</td><td>${formatDate(invoiceDate)}</td></tr>
-        <tr><td>Order Date & Time</td><td>${formatDateTime(orderDate)}</td></tr>
-        <tr><td>Order Status</td><td>${safe(order.orderStatus || '-')}</td></tr>
-        <tr><td>Payment Method</td><td>${safe(order.paymentMethod || '-')}</td></tr>
-        <tr><td>Payment Status</td><td>${safe(order.paymentStatus || '-')}</td></tr>
-        <tr><td>Transaction ID</td><td>${safe(transactionId)}</td></tr>
-      </table>
-    </div>
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(10);
+  doc.setTextColor(75, 85, 99);
+  doc.text(
+    `${STORE_INFO.tagline} | ${STORE_INFO.location} | Email: ${STORE_INFO.email} | Phone: ${STORE_INFO.phone}`,
+    pageWidth / 2,
+    86,
+    { align: 'center' }
+  );
 
-    <div class="section">
-      <div class="section-title">Bill To</div>
-      <div style="padding: 10px; font-size: 13px; line-height: 1.5;">
-        <div><b>Name:</b> ${safe(customerName)}</div>
-        <div><b>Phone:</b> ${safe(customerPhone)}</div>
-        <div><b>Email:</b> ${safe(customerEmail)}</div>
-        <div><b>Address:</b> ${safe(customerAddress || '-')}</div>
-      </div>
-    </div>
+  autoTable(doc, {
+    startY: 102,
+    head: [['Invoice Details', '']],
+    body: [
+      ['Invoice No', invoiceNo],
+      ['Order ID', orderId],
+      ['Invoice Date', formatDate(invoiceDate)],
+      ['Order Date & Time', formatDateTime(orderDate)],
+      ['Order Status', order.orderStatus || '-'],
+      ['Payment Method', order.paymentMethod || '-'],
+      ['Payment Status', order.paymentStatus || '-'],
+      ['Transaction ID', transactionId],
+    ],
+    theme: 'grid',
+    margin: { left, right: 40 },
+    styles: { fontSize: 10, cellPadding: 6 },
+    headStyles: { fillColor: [17, 24, 39], textColor: 255, fontStyle: 'bold' },
+    columnStyles: { 0: { cellWidth: 180 }, 1: { cellWidth: contentWidth - 180 } },
+  });
 
-    <div class="section">
-      <div class="section-title">Order Details</div>
-      <table class="items-table">
-        <thead>
-          <tr>
-            <th>Sr No</th>
-            <th>Item Name</th>
-            <th>Qty</th>
-            <th>Rate</th>
-            <th>Taxable Value</th>
-            <th>GST %</th>
-            <th>GST Amount</th>
-            <th>Amount</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${rows || '<tr><td colspan="8">No items</td></tr>'}
-        </tbody>
-      </table>
-    </div>
+  autoTable(doc, {
+    startY: doc.lastAutoTable.finalY + 12,
+    head: [['Bill To']],
+    body: [[
+      `Name: ${customerName}\nPhone: ${customerPhone}\nEmail: ${customerEmail}\nAddress: ${customerAddress || '-'}`
+    ]],
+    theme: 'grid',
+    margin: { left, right: 40 },
+    styles: { fontSize: 10, cellPadding: 6 },
+    headStyles: { fillColor: [17, 24, 39], textColor: 255, fontStyle: 'bold' },
+  });
 
-    <table class="totals">
-      <tr><td>Sub Total (incl. GST)</td><td>${formatMoney(subtotal)}</td></tr>
-      <tr><td>Taxable Value</td><td>${formatMoney(taxableValue)}</td></tr>
-      <tr><td>SGST (9%)</td><td>${formatMoney(sgst)}</td></tr>
-      <tr><td>CGST (9%)</td><td>${formatMoney(cgst)}</td></tr>
-      <tr><td>Discount</td><td>- ${formatMoney(discount)}</td></tr>
-      <tr><td>Shipping Charges</td><td>${formatMoney(deliveryCharges)}</td></tr>
-      <tr><td>Total Amount</td><td>${formatMoney(total)}</td></tr>
-    </table>
+  const itemRows = items.length
+    ? items.map((item, index) => {
+        const qty = Number(item.quantity || 0);
+        const rate = Number(item.price || 0);
+        const lineTotal = qty * rate;
+        const lineTaxable = lineTotal / (1 + GST_RATE);
+        const lineGst = lineTotal - lineTaxable;
+        return [
+          String(index + 1),
+          item.name || item.product?.name || 'Item',
+          String(qty),
+          formatMoney(rate),
+          formatMoney(lineTaxable),
+          '18%',
+          formatMoney(lineGst),
+          formatMoney(lineTotal),
+        ];
+      })
+    : [['-', 'No items', '-', '-', '-', '-', '-', '-']];
 
-    <div class="words">
-      <b>Amount in Words:</b> ${safe(numberToWords(Math.round(total)))} Rupees Only
-    </div>
-  </body>
-</html>`;
+  autoTable(doc, {
+    startY: doc.lastAutoTable.finalY + 12,
+    head: [['Sr No', 'Item Name', 'Qty', 'Rate', 'Taxable Value', 'GST %', 'GST Amount', 'Amount']],
+    body: itemRows,
+    theme: 'grid',
+    margin: { left, right: 40 },
+    styles: { fontSize: 9.5, cellPadding: 5 },
+    headStyles: { fillColor: [243, 244, 246], textColor: [17, 24, 39], fontStyle: 'bold' },
+    columnStyles: {
+      0: { cellWidth: 30, halign: 'center' },
+      1: { cellWidth: 130 },
+      2: { cellWidth: 30, halign: 'center' },
+      3: { cellWidth: 60 },
+      4: { cellWidth: 80 },
+      5: { cellWidth: 40, halign: 'center' },
+      6: { cellWidth: 70 },
+      7: { cellWidth: 70 },
+    },
+  });
 
-  const printWindow = window.open('', '_blank', 'width=1100,height=800');
-  if (!printWindow) {
-    alert('Popup blocked. Please allow popups to download invoice.');
-    return;
-  }
+  autoTable(doc, {
+    startY: doc.lastAutoTable.finalY + 10,
+    body: [
+      ['Sub Total (incl. GST)', formatMoney(subtotal)],
+      ['Taxable Value', formatMoney(taxableValue)],
+      ['SGST (9%)', formatMoney(sgst)],
+      ['CGST (9%)', formatMoney(cgst)],
+      ['Discount', `- ${formatMoney(discount)}`],
+      ['Shipping Charges', formatMoney(deliveryCharges)],
+      ['Total Amount', formatMoney(total)],
+    ],
+    theme: 'grid',
+    margin: { left: pageWidth - 320, right: 40 },
+    styles: { fontSize: 10, cellPadding: 6 },
+    columnStyles: { 0: { cellWidth: 180 }, 1: { cellWidth: 100, halign: 'right' } },
+    didParseCell: (data) => {
+      if (data.row.index === 6) {
+        data.cell.styles.fillColor = [17, 24, 39];
+        data.cell.styles.textColor = [255, 255, 255];
+        data.cell.styles.fontStyle = 'bold';
+      }
+    },
+  });
 
-  printWindow.document.open();
-  printWindow.document.write(html);
-  printWindow.document.close();
-  printWindow.focus();
-  setTimeout(() => {
-    printWindow.print();
-  }, 300);
+  const wordsY = doc.lastAutoTable.finalY + 18;
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(11);
+  doc.setTextColor(17, 24, 39);
+  doc.text('Amount in Words:', left, wordsY);
+  doc.setFont('helvetica', 'normal');
+  doc.text(`${numberToWords(Math.round(total))} Rupees Only`, left + 95, wordsY);
+
+  doc.save(`${invoiceNo}.pdf`);
 };
 
