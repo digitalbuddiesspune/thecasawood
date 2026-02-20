@@ -202,10 +202,17 @@ router.put('/:itemId', optionalProtect, async (req, res) => {
       });
     }
 
-    // Get product to update price
+    // Get product to update price (respect variant price if selected)
     const product = await Product.findById(item.product);
     if (product) {
-      item.price = product.price;
+      let finalPrice = product.price;
+      if (item.variantName) {
+        const variant = product.variants?.find(v => v.name === item.variantName);
+        if (variant?.price != null) {
+          finalPrice = variant.price;
+        }
+      }
+      item.price = finalPrice;
     }
 
     item.quantity = quantity;

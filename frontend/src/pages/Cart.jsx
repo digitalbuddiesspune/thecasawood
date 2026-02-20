@@ -106,13 +106,13 @@ const Cart = () => {
 
     const subtotal = cartItems.reduce((sum, item) => {
         const product = item.product
-        return sum + ((product?.price || item.price) * item.quantity)
+        return sum + (((item.price ?? product?.price) || 0) * item.quantity)
     }, 0)
 
     const discount = cartItems.reduce((sum, item) => {
         const product = item.product
         // Force 25% logic
-        const price = product?.price || item.price
+        const price = (item.price ?? product?.price) || 0
         const originalPrice = Math.round(price * 1.25)
         return sum + ((originalPrice - price) * item.quantity)
     }, 0)
@@ -174,7 +174,7 @@ const Cart = () => {
                                 <div className="divide-y divide-gray-100">
                                     {cartItems.map((item, index) => {
                                         const product = item.product || {}
-                                        const productPrice = product.price || item.price
+                                        const productPrice = item.price ?? product.price
                                         const productOriginalPrice = product.originalPrice || product.price || item.price
                                         const productName = product.name || item.name
                                         const productImage = product.image || item.image
@@ -238,6 +238,9 @@ const Cart = () => {
                                                             <span className="text-sm text-gray-500 line-through">₹{(Math.round(productPrice * 1.25) * item.quantity).toLocaleString()}</span>
                                                             <span className="text-sm text-[#8b5e3c] font-bold">25% off</span>
                                                         </div>
+                                                        <p className="text-xs text-gray-500 mb-3">
+                                                            Unit Price: <span className="font-medium text-gray-900">₹{Number(productPrice || 0).toLocaleString()}</span>
+                                                        </p>
 
                                                         {/* Delivery Info */}
                                                         <div className="flex items-center gap-2 text-sm text-gray-600 mb-3">
@@ -265,7 +268,7 @@ const Cart = () => {
                                                                     {item.quantity}
                                                                 </span>
                                                                 <button
-                                                                    onClick={() => updateQuantity(item._id, 1)}
+                                                                    onClick={() => updateQuantity(item._id || item.id, 1)}
                                                                     className="px-3 py-1.5 hover:bg-gray-100 transition-colors"
                                                                 >
                                                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -275,7 +278,7 @@ const Cart = () => {
                                                             </div>
 
                                                             <button
-                                                                onClick={() => saveForLater(item._id)}
+                                                                onClick={() => saveForLater(item._id || item.id)}
                                                                 className="text-sm font-medium text-gray-700 hover:text-[#8b5e3c] transition-colors"
                                                             >
                                                                 SAVE FOR LATER

@@ -25,11 +25,17 @@ router.get('/', async (req, res) => {
     // Build query
     const query = { isActive: true };
 
-    if (category && category !== 'All') {
-      if (category === 'Sofas') {
-        query.category = { $in: ['Polyester Fabric Sofas', 'Leatherette Sofas', 'Sofas'] };
+    const normalizedCategory = typeof category === 'string' ? category.trim() : category;
+    const normalizedCategoryKey =
+      typeof normalizedCategory === 'string' ? normalizedCategory.toLowerCase() : '';
+
+    if (normalizedCategory && normalizedCategoryKey !== 'all') {
+      // Special-case: "Sofas" should include any sofa-like category naming
+      // (e.g., "Leatherette Sofa/Sofas", "Polyester Fabric Sofas", etc.)
+      if (normalizedCategoryKey === 'sofas' || normalizedCategoryKey === 'sofa') {
+        query.category = { $regex: 'sofa', $options: 'i' };
       } else {
-        query.category = category;
+        query.category = normalizedCategory;
       }
     }
 
