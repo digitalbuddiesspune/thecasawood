@@ -13,7 +13,8 @@
     "seed:full-sofas": "node scripts/seedFullSofaProducts.js",
     "seed:fabric-grouped": "node scripts/seedFabricGroupedProducts.js",
     "seed:beds": "node scripts/seedGroupedBeds.js",
-    "seed:lounge-chairs": "node scripts/seedLoungeChairs.js"
+    "seed:lounge-chairs": "node scripts/seedLoungeChairs.js",
+    "seed:k": "node scripts/seedKProducts.js"
   },
   "engines": {
     "node": ">=18"

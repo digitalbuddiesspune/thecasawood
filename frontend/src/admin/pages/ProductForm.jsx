@@ -63,6 +63,7 @@ const ProductForm = () => {
     image: '',
   });
   const [newFeature, setNewFeature] = useState('');
+  const [newColorOption, setNewColorOption] = useState('');
   const [newFabricType, setNewFabricType] = useState('');
   const [newDimDetailTitle, setNewDimDetailTitle] = useState('');
   const [newDimDetailItem, setNewDimDetailItem] = useState({ label: '', value: '' });
@@ -229,6 +230,21 @@ const ProductForm = () => {
     setFormData((prev) => ({
       ...prev,
       features: prev.features.filter((_, i) => i !== index),
+    }));
+  };
+
+  const handleAddColorOption = () => {
+    const trimmed = newColorOption.trim();
+    if (trimmed && !formData.colorOptions.includes(trimmed)) {
+      setFormData((prev) => ({ ...prev, colorOptions: [...prev.colorOptions, trimmed] }));
+      setNewColorOption('');
+    }
+  };
+
+  const handleRemoveColorOption = (index) => {
+    setFormData((prev) => ({
+      ...prev,
+      colorOptions: prev.colorOptions.filter((_, i) => i !== index),
     }));
   };
 
@@ -641,6 +657,28 @@ const ProductForm = () => {
             <div>
               <label className={labelClass}>Color</label>
               <input type="text" name="color" value={formData.color} onChange={handleChange} className={inputClass(false)} placeholder="e.g. Brown" />
+            </div>
+            <div className="lg:col-span-3">
+              <label className={labelClass}>Color options (shown on product page)</label>
+              <div className="flex flex-wrap gap-2 mb-2">
+                {formData.colorOptions.map((c, i) => (
+                  <span key={i} className="inline-flex items-center gap-1 px-2.5 py-1 bg-gray-100 rounded-full text-sm">
+                    {c}
+                    <button type="button" onClick={() => handleRemoveColorOption(i)} className="text-red-500 hover:text-red-700" aria-label="Remove">×</button>
+                  </span>
+                ))}
+              </div>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={newColorOption}
+                  onChange={(e) => setNewColorOption(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddColorOption())}
+                  placeholder="e.g. Brown, Walnut, White"
+                  className={`flex-1 max-w-xs ${inputClass(false)}`}
+                />
+                <button type="button" onClick={handleAddColorOption} className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm">Add color</button>
+              </div>
             </div>
             <div>
               <label className={labelClass}>Warranty</label>
