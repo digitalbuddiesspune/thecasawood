@@ -65,6 +65,9 @@ router.get('/', async (req, res) => {
       sort.rating = sortOrder === 'asc' ? 1 : -1;
     } else if (sortBy === 'popular') {
       sort.reviews = -1;
+    } else if (sortBy === 'sequence' || sortBy === 'sequenceNumber') {
+      sort.sequenceNumber = sortOrder === 'desc' ? -1 : 1;
+      sort.createdAt = 1; // tie-breaker
     } else {
       sort.createdAt = sortOrder === 'asc' ? 1 : -1;
     }

@@ -121,6 +121,11 @@ const productSchema = new mongoose.Schema({
     type: Boolean,
     default: true
   },
+  sequenceNumber: {
+    type: Number,
+    default: 0,
+    index: true
+  },
   // New Fields for Detailed Product Info
   specifications: [{
     key: { type: String, required: true },

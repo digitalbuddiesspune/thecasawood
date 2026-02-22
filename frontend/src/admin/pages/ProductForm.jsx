@@ -34,6 +34,7 @@ const ProductForm = () => {
     stockQuantity: '',
     inStock: true,
     sku: '',
+    sequenceNumber: '',
     status: 'active',
     weight: '',
     weightUnit: 'kg',
@@ -104,6 +105,7 @@ const ProductForm = () => {
           stockQuantity: p.stockQuantity ?? '',
           inStock: p.inStock !== false,
           sku: p.sku || '',
+          sequenceNumber: p.sequenceNumber !== undefined && p.sequenceNumber !== null ? p.sequenceNumber : '',
           status: p.isActive !== false ? 'active' : 'inactive',
           weight: weightNum,
           weightUnit,
@@ -441,6 +443,7 @@ const ProductForm = () => {
       inStock: Boolean(formData.inStock),
       isActive: formData.status === 'active',
       sku: formData.sku && formData.sku.trim() ? formData.sku.trim() : undefined,
+      sequenceNumber: typeof formData.sequenceNumber === 'number' ? formData.sequenceNumber : (parseInt(formData.sequenceNumber, 10) || 0),
       dimensions,
       warranty: formData.warranty && formData.warranty.trim() ? formData.warranty.trim() : undefined,
       material: formData.material && formData.material.trim() ? formData.material.trim() : undefined,
@@ -560,6 +563,10 @@ const ProductForm = () => {
             <div>
               <label className={labelClass}>SKU</label>
               <input type="text" name="sku" value={formData.sku} onChange={handleChange} className={inputClass(false)} placeholder="e.g. CW-SOFA-001" />
+            </div>
+            <div>
+              <label className={labelClass}>Sequence Number</label>
+              <input type="number" name="sequenceNumber" value={formData.sequenceNumber} onChange={handleChange} min={0} className={inputClass(false)} placeholder="0" title="Display order (lower = first)" />
             </div>
             <div className="flex items-center gap-2 pt-6">
               <input type="checkbox" id="inStock" checked={formData.inStock} onChange={(e) => setFormData((prev) => ({ ...prev, inStock: e.target.checked }))} className="rounded border-gray-300 text-[#8b5e3c] focus:ring-[#8b5e3c]" />
