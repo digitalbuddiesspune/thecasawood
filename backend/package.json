@@ -14,7 +14,9 @@
     "seed:fabric-grouped": "node scripts/seedFabricGroupedProducts.js",
     "seed:beds": "node scripts/seedGroupedBeds.js",
     "seed:lounge-chairs": "node scripts/seedLoungeChairs.js",
-    "seed:k": "node scripts/seedKProducts.js"
+    "seed:k": "node scripts/seedKProducts.js",
+    "seed:keiba-fabric": "node scripts/seedKeibaFabric.js",
+    "seed:merry-fabric": "node scripts/seedMerryFabric.js"
   },
   "engines": {
     "node": ">=18"

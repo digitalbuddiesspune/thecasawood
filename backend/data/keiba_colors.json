@@ -1,0 +1,23 @@
+[
+  { "code": "KEIBA 901", "hex": "#E8E3D8", "approx": "Off-white / Cream" },
+  { "code": "KEIBA 902", "hex": "#DDD2C2", "approx": "Light Beige" },
+  { "code": "KEIBA 903", "hex": "#D1C4AE", "approx": "Warm Sand" },
+  { "code": "KEIBA 904", "hex": "#C2B39B", "approx": "Beige Brown" },
+  { "code": "KEIBA 905", "hex": "#B6A892", "approx": "Taupe" },
+  { "code": "KEIBA 906", "hex": "#AFA28F", "approx": "Grey Beige" },
+  { "code": "KEIBA 907", "hex": "#B5B5B0", "approx": "Light Grey" },
+  { "code": "KEIBA 908", "hex": "#9E9C97", "approx": "Ash Grey" },
+  { "code": "KEIBA 909", "hex": "#7F776E", "approx": "Dark Taupe" },
+  { "code": "KEIBA 910", "hex": "#8E8F8A", "approx": "Stone Grey" },
+  { "code": "KEIBA 911", "hex": "#6F6F6C", "approx": "Dark Grey" },
+  { "code": "KEIBA 912", "hex": "#4F504D", "approx": "Charcoal Grey" },
+  { "code": "KEIBA 913", "hex": "#2F3E46", "approx": "Deep Teal Navy" },
+  { "code": "KEIBA 914", "hex": "#3F5C6E", "approx": "Denim Blue" },
+  { "code": "KEIBA 915", "hex": "#6E8FA3", "approx": "Soft Sky Blue" },
+  { "code": "KEIBA 916", "hex": "#2F6F73", "approx": "Teal" },
+  { "code": "KEIBA 917", "hex": "#2E5A3C", "approx": "Forest Green" },
+  { "code": "KEIBA 918", "hex": "#6F8F7A", "approx": "Sage Green" },
+  { "code": "KEIBA 919", "hex": "#C79A8A", "approx": "Dusty Blush" },
+  { "code": "KEIBA 920", "hex": "#B08A2E", "approx": "Mustard Yellow" },
+  { "code": "KEIBA 921", "hex": "#3B3B39", "approx": "Deep Graphite" }
+]

@@ -466,13 +466,22 @@ const ProductDetail = () => {
                                 Unable to load fabric options: {fabricError}
                             </div>
                         )}
-                        <ColorSelector
-                            fabricData={fabricData}
-                            availableFabrics={availableFabrics}
-                            defaultFabric={product.defaultFabric}
-                            defaultColor={product.defaultColor}
-                            onColorChange={handleColorChange}
-                        />
+                        {availableFabrics.length > 0 && (() => {
+                            const productColorOptions = Array.isArray(product.colorOptions)
+                                ? product.colorOptions.filter((o) => typeof o === 'string').map((s) => String(s).trim()).filter(Boolean)
+                                : [];
+                            if (productColorOptions.length === 0) return null;
+                            return (
+                                <ColorSelector
+                                    fabricData={fabricData}
+                                    availableFabrics={availableFabrics}
+                                    productColorOptions={productColorOptions}
+                                    defaultFabric={product.defaultFabric}
+                                    defaultColor={product.defaultColor}
+                                    onColorChange={handleColorChange}
+                                />
+                            );
+                        })()}
 
                         {/* Price */}
                         <div className="flex items-end gap-3 mb-4">

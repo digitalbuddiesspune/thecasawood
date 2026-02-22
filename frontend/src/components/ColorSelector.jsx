@@ -1,70 +1,132 @@
 import { useState, useEffect } from 'react';
 
 /**
+ * Accurate hex values for common color names so swatches match the name.
+ * Keys are normalized (lowercase, trimmed). Backend hex is used when name not in map.
+ */
+const COLOR_NAME_TO_HEX = {
+    'pearl white': '#F5F5DC',
+    'white': '#FFFFFF',
+    'black': '#1C1C1C',
+    'grey': '#808080',
+    'gray': '#808080',
+    'dark grey': '#505050',
+    'dark gray': '#505050',
+    'light grey': '#D3D3D3',
+    'light gray': '#D3D3D3',
+    'charcoal': '#36454F',
+    'brown': '#8B4513',
+    'dark brown': '#3D2314',
+    'walnut': '#773F1A',
+    'beige': '#F5F5DC',
+    'cream': '#FFFDD0',
+    'navy': '#000080',
+    'blue': '#1E3A5F',
+    'red': '#8B0000',
+    'green': '#2E5C3E',
+    'olive': '#6B8E23',
+    'tan': '#D2B48C',
+    'taupe': '#483C32',
+    'sand': '#C2B280',
+    'ivory': '#FFFFF0',
+    'off white': '#FAF9F6',
+    'off-white': '#FAF9F6',
+    'slate': '#708090',
+    'graphite': '#383838',
+    'smoke': '#738276',
+    'stone': '#928E85',
+};
+
+function getDisplayHex(colorData) {
+    if (!colorData) return '#CCCCCC';
+    const name = String(colorData.name || '').toLowerCase().trim();
+    if (COLOR_NAME_TO_HEX[name]) return COLOR_NAME_TO_HEX[name];
+    const hex = String(colorData.color || '').trim();
+    if (/^#[0-9A-Fa-f]{6}$/.test(hex)) return hex;
+    if (/^#[0-9A-Fa-f]{3}$/.test(hex)) return hex;
+    return hex || '#CCCCCC';
+}
+
+/**
  * ColorSelector Component
- * 
- * Professional fabric and color selection UI for furniture products
- * Fetches data dynamically from passed props (which come from backend).
- * 
+ * Shows only colors from product (productColorOptions). Swatch hex is derived from color name for accuracy.
+ *
  * @param {Object} props
  * @param {Object} props.fabricData - Full fabric data map (e.g., { "KEIBA": [...colors] })
- * @param {Array} props.availableFabrics - List of fabric types to show (e.g., ['KEIBA', 'MERRY'])
+ * @param {Array} props.availableFabrics - List of fabric types to show
+ * @param {Array} props.productColorOptions - Product's color options from backend
  * @param {String} props.defaultFabric - Initial fabric selection
  * @param {String} props.defaultColor - Initial color code
- * @param {Function} props.onColorChange - Callback when color changes: (fabric, colorCode, colorData) => {}
+ * @param {Function} props.onColorChange - Callback (fabric, colorCode, colorData) => {}
  */
 const ColorSelector = ({
-    fabricData = {}, // Defaults to empty object if not loaded yet
+    fabricData = {},
     availableFabrics = [],
+    productColorOptions = [],
     defaultFabric = null,
     defaultColor = null,
     onColorChange
 }) => {
-    // Helper to get colors safely
+    // Helper to get colors safely (all colors for a fabric from fabrics API)
     const getColors = (fabric) => fabricData[fabric] || [];
+
+    // Only show colors that are in this product's colorOptions (backend). No fallback to full fabric list.
+    const normalizeOpt = (o) => String(o || '').toLowerCase().trim().replace(/\s+/g, ' ');
+    const matchesProductOption = (fabric, colorData) => {
+        if (!productColorOptions || productColorOptions.length === 0) return false;
+        const fullCode = normalizeOpt(`${fabric} ${colorData.code}`);
+        const codeNorm = normalizeOpt(colorData.code);
+        const nameNorm = normalizeOpt(colorData.name);
+        return productColorOptions.some((opt) => {
+            const o = normalizeOpt(opt);
+            return o === fullCode || o === codeNorm || o === nameNorm;
+        });
+    };
+
+    const getFilteredColors = (fabric) => {
+        const all = getColors(fabric);
+        if (!productColorOptions || productColorOptions.length === 0) return [];
+        return all.filter((c) => matchesProductOption(fabric, c));
+    };
 
     // Helper for color code format
     const getFullColorCode = (fabric, code) => `${fabric} ${code}`;
 
-    // Initialize with first available fabric if no default provided
-    // If availableFabrics is empty (shouldn't happen if parent handles it), fallback to keys of fabricData
-    // Use availableFabrics directly. Parent must handle fallback if desired.
     const fabricsToList = availableFabrics;
-
-    // Safety check if no fabrics at all
-    // Safety check if no fabrics at all
-    if (fabricsToList.length === 0) return null;
-
-    const initialFabric = defaultFabric && fabricsToList.includes(defaultFabric) ? defaultFabric : fabricsToList[0];
-    const initialColors = getColors(initialFabric);
+    const hasFabrics = fabricsToList.length > 0;
+    const initialFabric = hasFabrics && (defaultFabric && fabricsToList.includes(defaultFabric) ? defaultFabric : fabricsToList[0]);
+    const initialColors = hasFabrics ? getFilteredColors(initialFabric) : [];
     const initialColor = defaultColor || initialColors[0]?.code;
 
     const [selectedFabric, setSelectedFabric] = useState(initialFabric);
     const [selectedColor, setSelectedColor] = useState(initialColor);
     const [hoveredColor, setHoveredColor] = useState(null);
 
-    // Update state if props change (e.g. data loaded late)
     useEffect(() => {
+        if (!hasFabrics) return;
         if (Object.keys(fabricData).length > 0 && !selectedFabric) {
             const firstFabric = fabricsToList[0];
             if (firstFabric) {
-                setSelectedFabric(firstFabric);
-                const colors = getColors(firstFabric);
-                if (colors.length > 0) setSelectedColor(colors[0].code);
+                const colors = getFilteredColors(firstFabric);
+                const code = colors.length > 0 ? colors[0].code : null;
+                const t = setTimeout(function () {
+                    setSelectedFabric(firstFabric);
+                    if (code) setSelectedColor(code);
+                }, 0);
+                return function () { clearTimeout(t); };
             }
         }
-    }, [fabricData, fabricsToList, selectedFabric]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- sync when fabric data loads; getFilteredColors is stable in practice
+    }, [fabricData, fabricsToList, selectedFabric, productColorOptions, hasFabrics]);
 
-
-    // Get current color options based on selected fabric
-    const currentColors = getColors(selectedFabric);
+    const currentColors = hasFabrics ? getFilteredColors(selectedFabric) : [];
 
     // Handle fabric change
     const handleFabricChange = (fabric) => {
         setSelectedFabric(fabric);
 
         // Auto-select first color of new fabric
-        const newColors = getColors(fabric);
+        const newColors = getFilteredColors(fabric);
         if (newColors.length > 0) {
             const firstColor = newColors[0];
             setSelectedColor(firstColor.code);
@@ -86,15 +148,17 @@ const ColorSelector = ({
         }
     };
 
-    // Initialize parent with default selection
-    useEffect(() => {
+    useEffect(function () {
         if (onColorChange && initialColors.length > 0) {
-            const initialColorData = initialColors.find(c => c.code === initialColor);
+            const initialColorData = initialColors.find(function (c) { return c.code === initialColor; });
             if (initialColorData) {
                 onColorChange(initialFabric, initialColor, initialColorData);
             }
         }
-    }, []); // Run once on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- run once on mount to notify parent of initial selection
+    }, []);
+
+    if (!hasFabrics) return null;
 
     return (
         <div className="mb-6">
@@ -150,7 +214,7 @@ const ColorSelector = ({
                                         ? 'ring-2 ring-[#8b5e3c] ring-offset-2 scale-110 shadow-lg z-10'
                                         : 'ring-1 ring-gray-200 hover:ring-[#8b5e3c] hover:scale-105 hover:shadow-md'
                                         }`}
-                                    style={{ backgroundColor: colorData.color }}
+                                    style={{ backgroundColor: getDisplayHex(colorData) }}
                                     title={fullCode}
                                     aria-label={`Select ${fullCode}`}
                                 >
