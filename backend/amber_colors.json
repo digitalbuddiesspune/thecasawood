@@ -1,0 +1,142 @@
+[
+  {
+    "code": "AMBER 101",
+    "hex": "#C9B89A",
+    "approx": "Light Beige"
+  },
+  {
+    "code": "AMBER 102",
+    "hex": "#B7A27E",
+    "approx": "Warm Sand"
+  },
+  {
+    "code": "AMBER 103",
+    "hex": "#B58E6A",
+    "approx": "Camel"
+  },
+  {
+    "code": "AMBER 104",
+    "hex": "#7A5F3E",
+    "approx": "Brown"
+  },
+  {
+    "code": "AMBER 105",
+    "hex": "#6A523A",
+    "approx": "Dark Brown"
+  },
+  {
+    "code": "AMBER 106",
+    "hex": "#5A4A38",
+    "approx": "Coffee Brown"
+  },
+  {
+    "code": "AMBER 107",
+    "hex": "#8A3F2F",
+    "approx": "Rust"
+  },
+  {
+    "code": "AMBER 108",
+    "hex": "#B6A23A",
+    "approx": "Mustard"
+  },
+  {
+    "code": "AMBER 109",
+    "hex": "#6F6A2F",
+    "approx": "Olive"
+  },
+  {
+    "code": "AMBER 110",
+    "hex": "#4F8A8A",
+    "approx": "Teal"
+  },
+  {
+    "code": "AMBER 111",
+    "hex": "#6F7F7F",
+    "approx": "Grey Teal"
+  },
+  {
+    "code": "AMBER 112",
+    "hex": "#CFC7A8",
+    "approx": "Light Greige"
+  },
+  {
+    "code": "AMBER 113",
+    "hex": "#8A7A5A",
+    "approx": "Taupe"
+  },
+  {
+    "code": "AMBER 114",
+    "hex": "#6F6A63",
+    "approx": "Warm Grey"
+  },
+  {
+    "code": "AMBER 115",
+    "hex": "#3F3F35",
+    "approx": "Charcoal"
+  },
+  {
+    "code": "AMBER 116",
+    "hex": "#C49A2C",
+    "approx": "Golden Mustard"
+  },
+  {
+    "code": "AMBER 117",
+    "hex": "#C16A2C",
+    "approx": "Burnt Orange"
+  },
+  {
+    "code": "AMBER 118",
+    "hex": "#8A3F2A",
+    "approx": "Brick"
+  },
+  {
+    "code": "AMBER 119",
+    "hex": "#8F9A8A",
+    "approx": "Grey Sage"
+  },
+  {
+    "code": "AMBER 120",
+    "hex": "#B58A73",
+    "approx": "Muted Rose"
+  },
+  {
+    "code": "AMBER 121",
+    "hex": "#A56F6A",
+    "approx": "Dusty Rose"
+  },
+  {
+    "code": "AMBER 122",
+    "hex": "#9A4F4A",
+    "approx": "Muted Red"
+  },
+  {
+    "code": "AMBER 123",
+    "hex": "#2F4F3F",
+    "approx": "Forest Green"
+  },
+  {
+    "code": "AMBER 124",
+    "hex": "#3F6F5A",
+    "approx": "Green Teal"
+  },
+  {
+    "code": "AMBER 125",
+    "hex": "#1F3F3F",
+    "approx": "Deep Teal"
+  },
+  {
+    "code": "AMBER 126",
+    "hex": "#9FB6B6",
+    "approx": "Light Aqua"
+  },
+  {
+    "code": "AMBER 127",
+    "hex": "#2F6F73",
+    "approx": "Ocean Teal"
+  },
+  {
+    "code": "AMBER 128",
+    "hex": "#2A3A4F",
+    "approx": "Navy"
+  }
+]

@@ -19,8 +19,7 @@
     "seed:merry-fabric": "node scripts/seedMerryFabric.js",
     "seed:velveto-fabric": "node scripts/seedVelvetoFabric.js",
     "seed:aboone-fabric": "node scripts/seedAbooneFabric.js",
-    "seed:velveto-fabric": "node scripts/seedVelvetoFabric.js",
-    "seed:aboone-fabric": "node scripts/seedAbooneFabric.js"
+    "seed:amber-fabric": "node scripts/seedAmberFabric.js"
   },
   "engines": {
     "node": ">=18"

@@ -2,6 +2,9 @@
 
 /* Custom base styles */
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
   body {
     @apply m-0 min-h-screen;
   }

@@ -15,7 +15,7 @@ const ProductList = () => {
     })
 
     const [priceRange, setPriceRange] = useState([0, 100000])
-    const [sortBy, setSortBy] = useState('popular')
+    const [sortBy, setSortBy] = useState('sequence')
     const [isFilterOpen, setIsFilterOpen] = useState(false)
     const [products, setProducts] = useState([])
     const [loading, setLoading] = useState(true)

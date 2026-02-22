@@ -5,9 +5,9 @@ const ScrollToTop = () => {
     const [isVisible, setIsVisible] = useState(false);
     const { pathname } = useLocation();
 
-    // Scroll to top on route change
+    // Scroll to top on route change (smooth)
     useEffect(() => {
-        window.scrollTo(0, 0);
+        window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
     }, [pathname]);
 
     // Toggle visibility of button based on scroll position
