@@ -16,7 +16,11 @@
     "seed:lounge-chairs": "node scripts/seedLoungeChairs.js",
     "seed:k": "node scripts/seedKProducts.js",
     "seed:keiba-fabric": "node scripts/seedKeibaFabric.js",
-    "seed:merry-fabric": "node scripts/seedMerryFabric.js"
+    "seed:merry-fabric": "node scripts/seedMerryFabric.js",
+    "seed:velveto-fabric": "node scripts/seedVelvetoFabric.js",
+    "seed:aboone-fabric": "node scripts/seedAbooneFabric.js",
+    "seed:velveto-fabric": "node scripts/seedVelvetoFabric.js",
+    "seed:aboone-fabric": "node scripts/seedAbooneFabric.js"
   },
   "engines": {
     "node": ">=18"

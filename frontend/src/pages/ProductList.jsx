@@ -42,10 +42,7 @@ const ProductList = () => {
         const fetchProducts = async () => {
             try {
                 setLoading(true)
-                const params = {
-                    page,
-                    limit: 20
-                }
+                const params = { page }
 
                 if (selectedCategory !== 'All') {
                     params.category = selectedCategory

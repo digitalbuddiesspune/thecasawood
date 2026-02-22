@@ -1,0 +1,372 @@
+[
+  {
+    "code": "VELVETO 901",
+    "hex": "#E8E5DC",
+    "approx": "Ivory"
+  },
+  {
+    "code": "VELVETO 902",
+    "hex": "#E4DCC8",
+    "approx": "Cream"
+  },
+  {
+    "code": "VELVETO 903",
+    "hex": "#D6C7A8",
+    "approx": "Beige"
+  },
+  {
+    "code": "VELVETO 904",
+    "hex": "#CBB693",
+    "approx": "Warm Beige"
+  },
+  {
+    "code": "VELVETO 905",
+    "hex": "#C8B89E",
+    "approx": "Light Taupe"
+  },
+  {
+    "code": "VELVETO 906",
+    "hex": "#B79E7B",
+    "approx": "Sand Brown"
+  },
+  {
+    "code": "VELVETO 907",
+    "hex": "#9F927E",
+    "approx": "Taupe Grey"
+  },
+  {
+    "code": "VELVETO 908",
+    "hex": "#BCAFA3",
+    "approx": "Soft Taupe"
+  },
+  {
+    "code": "VELVETO 909",
+    "hex": "#A89586",
+    "approx": "Stone Taupe"
+  },
+  {
+    "code": "VELVETO 910",
+    "hex": "#D8C2BE",
+    "approx": "Blush Nude"
+  },
+  {
+    "code": "VELVETO 911",
+    "hex": "#B88E63",
+    "approx": "Camel"
+  },
+  {
+    "code": "VELVETO 912",
+    "hex": "#C79B73",
+    "approx": "Tan"
+  },
+  {
+    "code": "VELVETO 913",
+    "hex": "#B89064",
+    "approx": "Warm Camel"
+  },
+  {
+    "code": "VELVETO 914",
+    "hex": "#8A5A2E",
+    "approx": "Brown"
+  },
+  {
+    "code": "VELVETO 915",
+    "hex": "#C6B39A",
+    "approx": "Greige"
+  },
+  {
+    "code": "VELVETO 916",
+    "hex": "#BBAE8D",
+    "approx": "Khaki"
+  },
+  {
+    "code": "VELVETO 917",
+    "hex": "#D6C06F",
+    "approx": "Soft Mustard"
+  },
+  {
+    "code": "VELVETO 918",
+    "hex": "#C89C32",
+    "approx": "Mustard"
+  },
+  {
+    "code": "VELVETO 919",
+    "hex": "#B8832F",
+    "approx": "Golden Brown"
+  },
+  {
+    "code": "VELVETO 920",
+    "hex": "#B36B33",
+    "approx": "Rust"
+  },
+  {
+    "code": "VELVETO 921",
+    "hex": "#C6A3A9",
+    "approx": "Dusty Pink"
+  },
+  {
+    "code": "VELVETO 922",
+    "hex": "#C05B6B",
+    "approx": "Rose"
+  },
+  {
+    "code": "VELVETO 923",
+    "hex": "#B01746",
+    "approx": "Magenta"
+  },
+  {
+    "code": "VELVETO 924",
+    "hex": "#5A0F1B",
+    "approx": "Wine"
+  },
+  {
+    "code": "VELVETO 925",
+    "hex": "#7A0F1E",
+    "approx": "Deep Wine"
+  },
+  {
+    "code": "VELVETO 926",
+    "hex": "#8A2A2A",
+    "approx": "Brick Red"
+  },
+  {
+    "code": "VELVETO 927",
+    "hex": "#9C3F2A",
+    "approx": "Rust Red"
+  },
+  {
+    "code": "VELVETO 928",
+    "hex": "#7A2E1E",
+    "approx": "Burnt Brown"
+  },
+  {
+    "code": "VELVETO 929",
+    "hex": "#6B3A2E",
+    "approx": "Chocolate"
+  },
+  {
+    "code": "VELVETO 930",
+    "hex": "#6E4A2C",
+    "approx": "Dark Brown"
+  },
+  {
+    "code": "VELVETO 931",
+    "hex": "#7A5536",
+    "approx": "Leather Brown"
+  },
+  {
+    "code": "VELVETO 932",
+    "hex": "#3A2B1F",
+    "approx": "Espresso"
+  },
+  {
+    "code": "VELVETO 933",
+    "hex": "#5A3A27",
+    "approx": "Coffee"
+  },
+  {
+    "code": "VELVETO 934",
+    "hex": "#6F4B2E",
+    "approx": "Warm Coffee"
+  },
+  {
+    "code": "VELVETO 935",
+    "hex": "#7A5A36",
+    "approx": "Walnut"
+  },
+  {
+    "code": "VELVETO 936",
+    "hex": "#8E7961",
+    "approx": "Warm Taupe"
+  },
+  {
+    "code": "VELVETO 937",
+    "hex": "#A98D6E",
+    "approx": "Khaki Brown"
+  },
+  {
+    "code": "VELVETO 938",
+    "hex": "#8F7C6E",
+    "approx": "Grey Brown"
+  },
+  {
+    "code": "VELVETO 939",
+    "hex": "#A69078",
+    "approx": "Beige Taupe"
+  },
+  {
+    "code": "VELVETO 940",
+    "hex": "#4A4637",
+    "approx": "Olive Brown"
+  },
+  {
+    "code": "VELVETO 941",
+    "hex": "#6A6A66",
+    "approx": "Grey"
+  },
+  {
+    "code": "VELVETO 942",
+    "hex": "#7C7F6E",
+    "approx": "Olive Grey"
+  },
+  {
+    "code": "VELVETO 943",
+    "hex": "#6B645C",
+    "approx": "Stone Grey"
+  },
+  {
+    "code": "VELVETO 944",
+    "hex": "#676E69",
+    "approx": "Green Grey"
+  },
+  {
+    "code": "VELVETO 945",
+    "hex": "#5C5753",
+    "approx": "Dark Grey"
+  },
+  {
+    "code": "VELVETO 946",
+    "hex": "#B6B2A0",
+    "approx": "Light Olive"
+  },
+  {
+    "code": "VELVETO 947",
+    "hex": "#A8A58F",
+    "approx": "Sage"
+  },
+  {
+    "code": "VELVETO 948",
+    "hex": "#C9C9C7",
+    "approx": "Light Grey"
+  },
+  {
+    "code": "VELVETO 949",
+    "hex": "#D1CEC5",
+    "approx": "Soft Greige"
+  },
+  {
+    "code": "VELVETO 950",
+    "hex": "#CFC8B6",
+    "approx": "Sand"
+  },
+  {
+    "code": "VELVETO 951",
+    "hex": "#BFC4B6",
+    "approx": "Grey Sage"
+  },
+  {
+    "code": "VELVETO 952",
+    "hex": "#9FA79B",
+    "approx": "Muted Sage"
+  },
+  {
+    "code": "VELVETO 953",
+    "hex": "#8FA08A",
+    "approx": "Green Sage"
+  },
+  {
+    "code": "VELVETO 954",
+    "hex": "#C8C36F",
+    "approx": "Lime"
+  },
+  {
+    "code": "VELVETO 955",
+    "hex": "#7F8341",
+    "approx": "Olive"
+  },
+  {
+    "code": "VELVETO 956",
+    "hex": "#59633F",
+    "approx": "Dark Olive"
+  },
+  {
+    "code": "VELVETO 957",
+    "hex": "#6C6F35",
+    "approx": "Moss"
+  },
+  {
+    "code": "VELVETO 958",
+    "hex": "#5A5524",
+    "approx": "Deep Olive"
+  },
+  {
+    "code": "VELVETO 959",
+    "hex": "#6A5C2B",
+    "approx": "Olive Brown"
+  },
+  {
+    "code": "VELVETO 960",
+    "hex": "#3F5A3D",
+    "approx": "Forest Green"
+  },
+  {
+    "code": "VELVETO 961",
+    "hex": "#1F4A45",
+    "approx": "Teal Green"
+  },
+  {
+    "code": "VELVETO 962",
+    "hex": "#2C5B52",
+    "approx": "Deep Teal"
+  },
+  {
+    "code": "VELVETO 963",
+    "hex": "#3F6A57",
+    "approx": "Green Teal"
+  },
+  {
+    "code": "VELVETO 964",
+    "hex": "#7FA19A",
+    "approx": "Soft Teal"
+  },
+  {
+    "code": "VELVETO 965",
+    "hex": "#3F5E6A",
+    "approx": "Blue Grey"
+  },
+  {
+    "code": "VELVETO 966",
+    "hex": "#7FA6A8",
+    "approx": "Aqua Grey"
+  },
+  {
+    "code": "VELVETO 967",
+    "hex": "#6F8790",
+    "approx": "Steel Blue"
+  },
+  {
+    "code": "VELVETO 968",
+    "hex": "#8A9199",
+    "approx": "Cool Grey"
+  },
+  {
+    "code": "VELVETO 969",
+    "hex": "#506A79",
+    "approx": "Denim"
+  },
+  {
+    "code": "VELVETO 970",
+    "hex": "#1F5A6B",
+    "approx": "Teal Blue"
+  },
+  {
+    "code": "VELVETO 971",
+    "hex": "#274C6B",
+    "approx": "Ocean Blue"
+  },
+  {
+    "code": "VELVETO 972",
+    "hex": "#183A57",
+    "approx": "Navy"
+  },
+  {
+    "code": "VELVETO 973",
+    "hex": "#1B2F4F",
+    "approx": "Deep Navy"
+  },
+  {
+    "code": "VELVETO 974",
+    "hex": "#16273F",
+    "approx": "Midnight Blue"
+  }
+]

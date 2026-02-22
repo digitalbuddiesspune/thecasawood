@@ -1,0 +1,222 @@
+[
+  {
+    "code": "ABOONE 101",
+    "hex": "#C9C1B6",
+    "approx": "Light Greige"
+  },
+  {
+    "code": "ABOONE 102",
+    "hex": "#BBAF97",
+    "approx": "Warm Beige"
+  },
+  {
+    "code": "ABOONE 103",
+    "hex": "#B09C7C",
+    "approx": "Sand"
+  },
+  {
+    "code": "ABOONE 104",
+    "hex": "#9C8F7C",
+    "approx": "Taupe"
+  },
+  {
+    "code": "ABOONE 105",
+    "hex": "#8E7F6C",
+    "approx": "Dark Taupe"
+  },
+  {
+    "code": "ABOONE 106",
+    "hex": "#8A7A67",
+    "approx": "Stone"
+  },
+  {
+    "code": "ABOONE 107",
+    "hex": "#7A6A57",
+    "approx": "Brown Taupe"
+  },
+  {
+    "code": "ABOONE 108",
+    "hex": "#6E5A45",
+    "approx": "Earth Brown"
+  },
+  {
+    "code": "ABOONE 109",
+    "hex": "#5A432E",
+    "approx": "Dark Brown"
+  },
+  {
+    "code": "ABOONE 110",
+    "hex": "#6B3F2B",
+    "approx": "Leather Brown"
+  },
+  {
+    "code": "ABOONE 111",
+    "hex": "#4A2F24",
+    "approx": "Espresso"
+  },
+  {
+    "code": "ABOONE 112",
+    "hex": "#7A3F2C",
+    "approx": "Rust Brown"
+  },
+  {
+    "code": "ABOONE 113",
+    "hex": "#8B4A32",
+    "approx": "Tan Brown"
+  },
+  {
+    "code": "ABOONE 114",
+    "hex": "#9A563D",
+    "approx": "Warm Tan"
+  },
+  {
+    "code": "ABOONE 115",
+    "hex": "#7A2E25",
+    "approx": "Deep Rust"
+  },
+  {
+    "code": "ABOONE 116",
+    "hex": "#7F1F1F",
+    "approx": "Deep Red"
+  },
+  {
+    "code": "ABOONE 117",
+    "hex": "#B7838A",
+    "approx": "Dusty Pink"
+  },
+  {
+    "code": "ABOONE 118",
+    "hex": "#8A6A63",
+    "approx": "Muted Rose"
+  },
+  {
+    "code": "ABOONE 119",
+    "hex": "#9A6A32",
+    "approx": "Caramel"
+  },
+  {
+    "code": "ABOONE 120",
+    "hex": "#A8892A",
+    "approx": "Mustard"
+  },
+  {
+    "code": "ABOONE 121",
+    "hex": "#B89C2F",
+    "approx": "Golden Mustard"
+  },
+  {
+    "code": "ABOONE 122",
+    "hex": "#7FA03A",
+    "approx": "Olive Green"
+  },
+  {
+    "code": "ABOONE 123",
+    "hex": "#5F6F2F",
+    "approx": "Dark Olive"
+  },
+  {
+    "code": "ABOONE 124",
+    "hex": "#2F5A3A",
+    "approx": "Forest Green"
+  },
+  {
+    "code": "ABOONE 125",
+    "hex": "#2F3F39",
+    "approx": "Deep Green"
+  },
+  {
+    "code": "ABOONE 126",
+    "hex": "#1F3F38",
+    "approx": "Teal Green"
+  },
+  {
+    "code": "ABOONE 127",
+    "hex": "#2F7A6A",
+    "approx": "Teal"
+  },
+  {
+    "code": "ABOONE 128",
+    "hex": "#2F3A3A",
+    "approx": "Dark Teal"
+  },
+  {
+    "code": "ABOONE 129",
+    "hex": "#2F4F57",
+    "approx": "Blue Teal"
+  },
+  {
+    "code": "ABOONE 130",
+    "hex": "#2F5A63",
+    "approx": "Steel Teal"
+  },
+  {
+    "code": "ABOONE 131",
+    "hex": "#3A6A73",
+    "approx": "Blue Green"
+  },
+  {
+    "code": "ABOONE 132",
+    "hex": "#2A4F63",
+    "approx": "Ocean Teal"
+  },
+  {
+    "code": "ABOONE 133",
+    "hex": "#2A3F5A",
+    "approx": "Deep Blue"
+  },
+  {
+    "code": "ABOONE 134",
+    "hex": "#1F2F4A",
+    "approx": "Navy"
+  },
+  {
+    "code": "ABOONE 135",
+    "hex": "#243A4F",
+    "approx": "Dark Navy"
+  },
+  {
+    "code": "ABOONE 136",
+    "hex": "#1A2A3A",
+    "approx": "Midnight"
+  },
+  {
+    "code": "ABOONE 137",
+    "hex": "#9C9488",
+    "approx": "Warm Grey"
+  },
+  {
+    "code": "ABOONE 138",
+    "hex": "#7F776C",
+    "approx": "Grey Taupe"
+  },
+  {
+    "code": "ABOONE 139",
+    "hex": "#5A4F43",
+    "approx": "Dark Brown Grey"
+  },
+  {
+    "code": "ABOONE 140",
+    "hex": "#4A3F36",
+    "approx": "Coffee Brown"
+  },
+  {
+    "code": "ABOONE 141",
+    "hex": "#3F3A33",
+    "approx": "Charcoal Brown"
+  },
+  {
+    "code": "ABOONE 142",
+    "hex": "#A8A8A6",
+    "approx": "Light Grey"
+  },
+  {
+    "code": "ABOONE 143",
+    "hex": "#6A6A67",
+    "approx": "Mid Grey"
+  },
+  {
+    "code": "ABOONE 144",
+    "hex": "#3A3A38",
+    "approx": "Charcoal"
+  }
+]

@@ -17,7 +17,7 @@ router.get('/', async (req, res) => {
       sortBy = 'createdAt',
       sortOrder = 'desc',
       page = 1,
-      limit = 20,
+      limit,
       tag,
       inStock
     } = req.query;
@@ -69,17 +69,19 @@ router.get('/', async (req, res) => {
       sort.createdAt = sortOrder === 'asc' ? 1 : -1;
     }
 
-    // Pagination
-    const pageNum = parseInt(page);
-    const limitNum = parseInt(limit);
-    const skip = (pageNum - 1) * limitNum;
+    // Pagination (optional: omit limit to get all products)
+    const pageNum = parseInt(page) || 1;
+    const limitNum = limit === undefined || limit === '' || limit === '0' || String(limit).toLowerCase() === 'all'
+      ? 0
+      : parseInt(limit);
+    const usePagination = limitNum > 0;
+    const skip = usePagination ? (pageNum - 1) * limitNum : 0;
 
-    // Execute query
-    const products = await Product.find(query)
-      .sort(sort)
-      .skip(skip)
-      .limit(limitNum)
-      .lean();
+    let queryChain = Product.find(query).sort(sort);
+    if (usePagination) {
+      queryChain = queryChain.skip(skip).limit(limitNum);
+    }
+    const products = await queryChain.lean();
 
     const total = await Product.countDocuments(query);
 
@@ -88,9 +90,9 @@ router.get('/', async (req, res) => {
       data: products,
       pagination: {
         page: pageNum,
-        limit: limitNum,
+        limit: usePagination ? limitNum : total,
         total,
-        pages: Math.ceil(total / limitNum)
+        pages: usePagination ? Math.ceil(total / limitNum) : 1
       }
     });
   } catch (error) {
