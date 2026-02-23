@@ -623,11 +623,11 @@ const ProductDetail = () => {
                                     </div>
                                 </div>
 
-                                {product.dimensionDetails && product.dimensionDetails.length > 0 ? (
+                                {(product.dimensionDetails && product.dimensionDetails.length > 0 || selectedVariant?.dimensions || (product.dimensions && (typeof product.dimensions === 'string' || product.dimensions.width || product.dimensions.length || product.dimensions.height))) ? (
                                     <div className="mt-4">
                                         <div className="text-sm font-medium text-gray-800 mb-3 uppercase">Product Dimensions</div>
                                         <div className="border border-gray-200 rounded-sm">
-                                            {/* Show Selected Variant Dimensions Highlighted if available */}
+                                            {/* Show Selected Variant Dimensions if available */}
                                             {selectedVariant?.dimensions && (
                                                 <div className="bg-[#fff8f5] border-b border-[#8b5e3c]/20">
                                                     <div className="flex flex-col md:grid md:grid-cols-3">
@@ -639,14 +639,51 @@ const ProductDetail = () => {
                                                 </div>
                                             )}
 
-                                            {product.dimensionDetails.map((detail, idx) => (
+                                            {/* Main dimensions: Length, Width, Height (shown for Beds and any product with dimensions object) */}
+                                            {product.dimensions && typeof product.dimensions === 'object' && (product.dimensions.length !== undefined && product.dimensions.length !== '' || product.dimensions.width || product.dimensions.height) && (
+                                                <div className="border-b border-gray-200">
+                                                    <div className="bg-gray-50 px-3 py-2 text-xs font-bold text-gray-500 uppercase tracking-wide border-b border-gray-100">Dimensions</div>
+                                                    {product.dimensions.length !== undefined && product.dimensions.length !== '' && (
+                                                        <div className="flex flex-col md:grid md:grid-cols-3 border-b border-gray-100 last:border-b-0">
+                                                            <div className="p-3 text-sm text-gray-500 md:col-span-1">Length</div>
+                                                            <div className="p-3 text-sm text-gray-800 md:col-span-2 pt-0 md:pt-3">{product.dimensions.length} {product.dimensions.unit || 'cm'}</div>
+                                                        </div>
+                                                    )}
+                                                    {product.dimensions.width && (
+                                                        <div className="flex flex-col md:grid md:grid-cols-3 border-b border-gray-100 last:border-b-0">
+                                                            <div className="p-3 text-sm text-gray-500 md:col-span-1">Width</div>
+                                                            <div className="p-3 text-sm text-gray-800 md:col-span-2 pt-0 md:pt-3">{product.dimensions.width} {product.dimensions.unit || 'cm'}</div>
+                                                        </div>
+                                                    )}
+                                                    {product.dimensions.height && (
+                                                        <div className="flex flex-col md:grid md:grid-cols-3 border-b border-gray-100 last:border-b-0">
+                                                            <div className="p-3 text-sm text-gray-500 md:col-span-1">Height</div>
+                                                            <div className="p-3 text-sm text-gray-800 md:col-span-2 pt-0 md:pt-3">{product.dimensions.height} {product.dimensions.unit || 'cm'}</div>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            )}
+
+                                            {/* Dimensions as single string */}
+                                            {product.dimensions && typeof product.dimensions === 'string' && (
+                                                <div className="border-b border-gray-200">
+                                                    <div className="bg-gray-50 px-3 py-2 text-xs font-bold text-gray-500 uppercase tracking-wide border-b border-gray-100">Dimensions</div>
+                                                    <div className="flex flex-col md:grid md:grid-cols-3 border-b border-gray-100">
+                                                        <div className="p-3 text-sm text-gray-500 md:col-span-1">Dimensions</div>
+                                                        <div className="p-3 text-sm text-gray-800 md:col-span-2 pt-0 md:pt-3">{product.dimensions}</div>
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {/* Extra sections e.g. Headboard Dimensions */}
+                                            {product.dimensionDetails && product.dimensionDetails.map((detail, idx) => (
                                                 <div key={idx} className="border-b border-gray-200 last:border-b-0">
                                                     {detail.title && (
                                                         <div className="bg-gray-50 px-3 py-2 text-xs font-bold text-gray-500 uppercase tracking-wide border-b border-gray-100">
                                                             {detail.title}
                                                         </div>
                                                     )}
-                                                    {detail.items.map((item, itemIdx) => (
+                                                    {detail.items && detail.items.map((item, itemIdx) => (
                                                         <div key={itemIdx} className="flex flex-col md:grid md:grid-cols-3 border-b border-gray-100 last:border-b-0">
                                                             <div className="p-3 text-sm text-gray-500 md:col-span-1">{item.label}</div>
                                                             <div className="p-3 text-sm text-gray-800 md:col-span-2 pt-0 md:pt-3">{item.value}</div>
