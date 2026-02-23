@@ -1,55 +1,21 @@
 import { useState, useEffect } from 'react';
 
-/**
- * Accurate hex values for common color names so swatches match the name.
- * Keys are normalized (lowercase, trimmed). Backend hex is used when name not in map.
- */
-const COLOR_NAME_TO_HEX = {
-    'pearl white': '#F5F5DC',
-    'white': '#FFFFFF',
-    'black': '#1C1C1C',
-    'grey': '#808080',
-    'gray': '#808080',
-    'dark grey': '#505050',
-    'dark gray': '#505050',
-    'light grey': '#D3D3D3',
-    'light gray': '#D3D3D3',
-    'charcoal': '#36454F',
-    'brown': '#8B4513',
-    'dark brown': '#3D2314',
-    'walnut': '#773F1A',
-    'beige': '#F5F5DC',
-    'cream': '#FFFDD0',
-    'navy': '#000080',
-    'blue': '#1E3A5F',
-    'red': '#8B0000',
-    'green': '#2E5C3E',
-    'olive': '#6B8E23',
-    'tan': '#D2B48C',
-    'taupe': '#483C32',
-    'sand': '#C2B280',
-    'ivory': '#FFFFF0',
-    'off white': '#FAF9F6',
-    'off-white': '#FAF9F6',
-    'slate': '#708090',
-    'graphite': '#383838',
-    'smoke': '#738276',
-    'stone': '#928E85',
-};
+const DEFAULT_SWATCH_HEX = '#CCCCCC';
 
+/**
+ * Returns the hex to display for a color swatch. Uses backend color (hex) only — no hardcoded overrides.
+ */
 function getDisplayHex(colorData) {
-    if (!colorData) return '#CCCCCC';
-    const name = String(colorData.name || '').toLowerCase().trim();
-    if (COLOR_NAME_TO_HEX[name]) return COLOR_NAME_TO_HEX[name];
+    if (!colorData) return DEFAULT_SWATCH_HEX;
     const hex = String(colorData.color || '').trim();
     if (/^#[0-9A-Fa-f]{6}$/.test(hex)) return hex;
     if (/^#[0-9A-Fa-f]{3}$/.test(hex)) return hex;
-    return hex || '#CCCCCC';
+    return hex || DEFAULT_SWATCH_HEX;
 }
 
 /**
  * ColorSelector Component
- * Shows only colors from product (productColorOptions). Swatch hex is derived from color name for accuracy.
+ * Shows only colors from product (productColorOptions). Swatch hex comes from backend (colorData.color).
  *
  * @param {Object} props
  * @param {Object} props.fabricData - Full fabric data map (e.g., { "KEIBA": [...colors] })
