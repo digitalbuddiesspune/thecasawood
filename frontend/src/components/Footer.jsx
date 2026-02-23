@@ -49,15 +49,12 @@ const Footer = () => {
                         </div>
                     </div>
 
-                    {/* Customer Service - Col 2 */}
+                    {/* Support - Col 2 */}
                     <div className="lg:col-span-2">
                         <h3 className="text-lg font-semibold mb-6 text-[#d4c4b7] uppercase tracking-wide">Support</h3>
                         <ul className="space-y-3 text-sm text-gray-300">
-                            <li><a href="#track" className="hover:text-[#8b5e3c] transition-colors">Track Order</a></li>
-                            <li><a href="#returns" className="hover:text-[#8b5e3c] transition-colors">Returns</a></li>
-                            <li><a href="#shipping" className="hover:text-[#8b5e3c] transition-colors">Shipping</a></li>
-                            <li><a href="#contact" className="hover:text-[#8b5e3c] transition-colors">Contact Us</a></li>
-                            <li><a href="#faq" className="hover:text-[#8b5e3c] transition-colors">FAQs</a></li>
+                            <li><Link to="/contact" className="hover:text-[#8b5e3c] transition-colors">Contact Us</Link></li>
+                            <li><Link to="/faqs" className="hover:text-[#8b5e3c] transition-colors">FAQs</Link></li>
                         </ul>
                     </div>
 

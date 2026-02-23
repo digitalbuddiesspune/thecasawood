@@ -24,6 +24,8 @@ const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'))
 const TermsConditions = lazy(() => import('./pages/TermsConditions'))
 const RefundPolicy = lazy(() => import('./pages/RefundPolicy'))
 const ShippingPolicy = lazy(() => import('./pages/ShippingPolicy'))
+const ContactUs = lazy(() => import('./pages/ContactUs'))
+const FAQs = lazy(() => import('./pages/FAQs'))
 
 // Admin pages
 const AdminLayout = lazy(() => import('./admin/components/AdminLayout'))
@@ -74,6 +76,8 @@ const AppContent = () => {
           <Route path="/terms" element={<TermsConditions />} />
           <Route path="/refund" element={<RefundPolicy />} />
           <Route path="/shipping" element={<ShippingPolicy />} />
+          <Route path="/contact" element={<ContactUs />} />
+          <Route path="/faqs" element={<FAQs />} />
 
           {/* Admin Routes */}
           <Route path="/admin" element={<AdminLayout />}>

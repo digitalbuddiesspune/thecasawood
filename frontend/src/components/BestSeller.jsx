@@ -6,25 +6,20 @@ const BestSeller = () => {
     const scrollRef = useRef(null);
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
 
     useEffect(() => {
         const fetchProducts = async () => {
             try {
                 setLoading(true);
-                setError(null);
                 const response = await productsAPI.getAll({ tag: 'Best Seller', limit: 20 });
                 if (response.data.success && response.data.data.length > 0) {
                     setProducts(response.data.data);
                 } else {
-                    // Fallback to showing message if no products
                     setProducts([]);
                 }
             } catch (err) {
                 console.error('Error fetching Best Seller products:', err);
-                // Don't set error - just use empty array to prevent page crash
                 setProducts([]);
-                setError(null); // Clear error to prevent error UI from showing
             } finally {
                 setLoading(false);
             }

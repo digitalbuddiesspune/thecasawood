@@ -49,10 +49,35 @@ const ColorSelector = ({
         });
     };
 
+    // Check if a single option string matches this color for the given fabric
+    const optionMatchesColor = (optionStr, fabric, colorData) => {
+        const o = normalizeOpt(optionStr);
+        const fullCode = normalizeOpt(`${fabric} ${colorData.code}`);
+        const codeNorm = normalizeOpt(colorData.code);
+        const nameNorm = normalizeOpt(colorData.name);
+        return o === fullCode || o === codeNorm || o === nameNorm;
+    };
+
+    /**
+     * Get colors for this fabric that are in product's colorOptions, ordered by productColorOptions (backend sequence).
+     */
     const getFilteredColors = (fabric) => {
         const all = getColors(fabric);
         if (!productColorOptions || productColorOptions.length === 0) return [];
-        return all.filter((c) => matchesProductOption(fabric, c));
+        const filtered = all.filter((c) => matchesProductOption(fabric, c));
+        const fabricNorm = normalizeOpt(fabric);
+        // Backend order: options that belong to this fabric (e.g. "MERRY 707", "MERRY 701") in productColorOptions order
+        const orderedOptionsForFabric = productColorOptions.filter(
+            (opt) => normalizeOpt(opt).startsWith(fabricNorm + ' ') || normalizeOpt(opt) === fabricNorm
+        );
+        filtered.sort((a, b) => {
+            const idxA = orderedOptionsForFabric.findIndex((opt) => optionMatchesColor(opt, fabric, a));
+            const idxB = orderedOptionsForFabric.findIndex((opt) => optionMatchesColor(opt, fabric, b));
+            const orderA = idxA === -1 ? 9999 : idxA;
+            const orderB = idxB === -1 ? 9999 : idxB;
+            return orderA - orderB;
+        });
+        return filtered;
     };
 
     // Helper for color code format
