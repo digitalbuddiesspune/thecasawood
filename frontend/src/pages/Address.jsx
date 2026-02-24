@@ -20,7 +20,7 @@ const Address = () => {
 
     // UI Selection States
     const [selectedAddressId, setSelectedAddressId] = useState(null) // Renamed for clarity
-    const [paymentMethod, setPaymentMethod] = useState('COD') // COD | Online
+    const [paymentMethod, setPaymentMethod] = useState('Online') // COD | Online (COD option commented out)
     const [showAddressForm, setShowAddressForm] = useState(false)
     const [editingAddress, setEditingAddress] = useState(null)
 
@@ -499,6 +499,7 @@ const Address = () => {
                                 <div>
                                     <p className="text-sm font-semibold text-gray-700 mb-3">Select Payment Method</p>
                                     <div className="flex flex-col gap-3">
+                                        {/* COD option commented out
                                         <label className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-all ${paymentMethod === 'COD' ? 'border-[#8b5e3c] bg-[#8b5e3c]/5' : 'border-gray-200 hover:border-gray-300'}`}>
                                             <input type="radio" name="paymentMethod" value="COD" checked={paymentMethod === 'COD'} onChange={() => setPaymentMethod('COD')} className="text-[#8b5e3c] focus:ring-[#8b5e3c]" />
                                             <div>
@@ -506,6 +507,7 @@ const Address = () => {
                                                 <p className="text-xs text-gray-500 mt-0.5">Pay when your order is delivered</p>
                                             </div>
                                         </label>
+                                        */}
                                         <label className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-all ${paymentMethod === 'Online' ? 'border-[#8b5e3c] bg-[#8b5e3c]/5' : 'border-gray-200 hover:border-gray-300'}`}>
                                             <input type="radio" name="paymentMethod" value="Online" checked={paymentMethod === 'Online'} onChange={() => setPaymentMethod('Online')} className="text-[#8b5e3c] focus:ring-[#8b5e3c]" />
                                             <div>
