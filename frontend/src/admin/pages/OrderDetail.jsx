@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { adminOrdersAPI } from '../services/adminApi';
 import { downloadInvoice } from '../../utils/invoice';
 import { getDisplayOrderId } from '../../utils/orderId';
@@ -284,28 +284,48 @@ const OrderDetail = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {order.items?.map((item, index) => (
-                <tr key={index} className="hover:bg-gray-50">
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-3">
-                      <img
-                        src={item.image || item.product?.image || '/placeholder.png'}
-                        alt=""
-                        className="w-10 h-10 object-cover rounded bg-gray-100"
-                      />
-                      <div>
-                        <p className="font-medium text-gray-900">{item.name || item.product?.name}</p>
-                        {item.variantName && <p className="text-gray-500 text-xs">{item.variantName}</p>}
-                        {item.fabric && <p className="text-gray-500 text-xs">Fabric: {item.fabric}</p>}
+              {order.items?.map((item, index) => {
+                const productId = item.product?._id ?? item.product;
+                const colorLabel = item.colorCode || (item.colorData && (item.colorData.name || item.colorData.code)) || null;
+                return (
+                  <tr key={index} className="hover:bg-gray-50">
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={item.image || item.product?.image || '/placeholder.png'}
+                          alt=""
+                          className="w-10 h-10 object-cover rounded bg-gray-100"
+                        />
+                        <div className="min-w-0">
+                          <p className="font-medium text-gray-900">
+                            {productId ? (
+                              <Link
+                                to={`/product/${productId}`}
+                                className="text-[#8b5e3c] hover:underline focus:outline-none focus:ring-0"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                {item.name || item.product?.name}
+                              </Link>
+                            ) : (
+                              item.name || item.product?.name
+                            )}
+                          </p>
+                          <div className="mt-1 space-y-0.5 text-xs text-gray-500">
+                            {item.variantName && <p>Option: {item.variantName}</p>}
+                            {item.fabric && <p>Fabric: {item.fabric}</p>}
+                            {colorLabel && <p>Color: {colorLabel}</p>}
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 text-gray-600">{item.quantity}</td>
-                  <td className="px-4 py-3 text-gray-600">₹{item.price?.toLocaleString()}</td>
-                  <td className="px-4 py-3 text-gray-500">—</td>
-                  <td className="px-4 py-3 font-medium text-gray-900">₹{((item.price || 0) * (item.quantity || 0))?.toLocaleString()}</td>
-                </tr>
-              ))}
+                    </td>
+                    <td className="px-4 py-3 text-gray-600">{item.quantity}</td>
+                    <td className="px-4 py-3 text-gray-600">₹{item.price?.toLocaleString()}</td>
+                    <td className="px-4 py-3 text-gray-500">—</td>
+                    <td className="px-4 py-3 font-medium text-gray-900">₹{((item.price || 0) * (item.quantity || 0))?.toLocaleString()}</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

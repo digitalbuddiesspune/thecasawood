@@ -1,0 +1,1100 @@
+[
+  {
+    "name": "Lounge Chair - Velveto 927 (Teak wood Frame)",
+    "description": "Lounge Chair with Teak wood frame and Velvet upholstery. Low back design with Duroflex foam. Cushions not included.",
+    "price": 19985,
+    "category": "Lounge chair",
+    "image": "",
+    "images": [],
+    "tag": null,
+    "rating": 0,
+    "reviews": 0,
+    "features": [
+      "Low Back Design",
+      "Duroflex Foam",
+      "Pre-Assembled Delivery"
+    ],
+    "inStock": true,
+    "stockQuantity": 10,
+    "sku": "LC-001",
+    "dimensions": {
+      "length": 30,
+      "width": 34,
+      "height": 35,
+      "unit": "cm"
+    },
+    "weight": 15,
+    "weightUnit": "kg",
+    "material": "Velvet",
+    "color": "Velveto 927",
+    "warranty": "1 year Manufacturing Warranty",
+    "isActive": true,
+    "specifications": [
+      {
+        "key": "Frame Material",
+        "value": "Teak wood"
+      },
+      {
+        "key": "Upholstery Material",
+        "value": "High quality Fabric"
+      },
+      {
+        "key": "Foam",
+        "value": "Duroflex"
+      },
+      {
+        "key": "Back Rest",
+        "value": "Low back"
+      },
+      {
+        "key": "Delivery Condition",
+        "value": "Pre-Assembled"
+      }
+    ],
+    "deliveryCondition": "Pre-Assembled",
+    "policies": {
+      "shipping": "Directly from Factory/Warehouse, Delivered in multiple boxes",
+      "warranty": "1 year Manufacturing Warranty",
+      "cancellations": "Cancellations are allowed free of charge only within first 24 hours of placing the order"
+    },
+    "createdAt": "",
+    "updatedAt": ""
+  },
+  {
+    "name": "Lounge Chair - Velveto 901 (Teak wood Frame)",
+    "description": "Lounge Chair with Teak wood frame and Velvet upholstery. Low back design with Duroflex foam. Cushions not included.",
+    "price": 19985,
+    "category": "Lounge chair",
+    "image": "",
+    "images": [],
+    "tag": null,
+    "rating": 0,
+    "reviews": 0,
+    "features": [
+      "Low Back Design",
+      "Duroflex Foam",
+      "Pre-Assembled Delivery"
+    ],
+    "inStock": true,
+    "stockQuantity": 10,
+    "sku": "LC-002",
+    "dimensions": {
+      "length": 30,
+      "width": 34,
+      "height": 35,
+      "unit": "cm"
+    },
+    "weight": 15,
+    "weightUnit": "kg",
+    "material": "Velvet",
+    "color": "Velveto 901",
+    "warranty": "1 year Manufacturing Warranty",
+    "isActive": true,
+    "specifications": [
+      {
+        "key": "Frame Material",
+        "value": "Teak wood"
+      },
+      {
+        "key": "Upholstery Material",
+        "value": "High quality Fabric"
+      },
+      {
+        "key": "Foam",
+        "value": "Duroflex"
+      },
+      {
+        "key": "Back Rest",
+        "value": "Low back"
+      },
+      {
+        "key": "Delivery Condition",
+        "value": "Pre-Assembled"
+      }
+    ],
+    "deliveryCondition": "Pre-Assembled",
+    "policies": {
+      "shipping": "Directly from Factory/Warehouse, Delivered in multiple boxes",
+      "warranty": "1 year Manufacturing Warranty",
+      "cancellations": "Cancellations are allowed free of charge only within first 24 hours of placing the order"
+    },
+    "createdAt": "",
+    "updatedAt": ""
+  },
+  {
+    "name": "Lounge Chair - MERRY 702 (Teak wood Frame)",
+    "description": "Lounge Chair with Teak wood frame and Leatherette upholstery. Low back design with Duroflex foam. Cushions not included.",
+    "price": 21000,
+    "category": "Lounge chair",
+    "image": "",
+    "images": [],
+    "tag": null,
+    "rating": 0,
+    "reviews": 0,
+    "features": [
+      "Low Back Design",
+      "Duroflex Foam",
+      "Pre-Assembled Delivery"
+    ],
+    "inStock": true,
+    "stockQuantity": 10,
+    "sku": "LC-003",
+    "dimensions": {
+      "length": 30,
+      "width": 34,
+      "height": 35,
+      "unit": "cm"
+    },
+    "weight": 15,
+    "weightUnit": "kg",
+    "material": "Leatherette",
+    "color": "MERRY 702",
+    "warranty": "1 year Manufacturing Warranty",
+    "isActive": true,
+    "specifications": [
+      {
+        "key": "Frame Material",
+        "value": "Teak wood"
+      },
+      {
+        "key": "Upholstery Material",
+        "value": "High quality Fabric"
+      },
+      {
+        "key": "Foam",
+        "value": "Duroflex"
+      },
+      {
+        "key": "Back Rest",
+        "value": "Low back"
+      },
+      {
+        "key": "Delivery Condition",
+        "value": "Pre-Assembled"
+      }
+    ],
+    "deliveryCondition": "Pre-Assembled",
+    "policies": {
+      "shipping": "Directly from Factory/Warehouse, Delivered in multiple boxes",
+      "warranty": "1 year Manufacturing Warranty",
+      "cancellations": "Cancellations are allowed free of charge only within first 24 hours of placing the order"
+    },
+    "createdAt": "",
+    "updatedAt": ""
+  },
+  {
+    "name": "Lounge Chair - MERRY 738 (Teak wood Frame)",
+    "description": "Lounge Chair with Teak wood frame and Leatherette upholstery. Low back design with Duroflex foam. Cushions not included.",
+    "price": 19985,
+    "category": "Lounge chair",
+    "image": "",
+    "images": [],
+    "tag": null,
+    "rating": 0,
+    "reviews": 0,
+    "features": [
+      "Low Back Design",
+      "Duroflex Foam",
+      "Pre-Assembled Delivery"
+    ],
+    "inStock": true,
+    "stockQuantity": 10,
+    "sku": "LC-004",
+    "dimensions": {
+      "length": 30,
+      "width": 34,
+      "height": 35,
+      "unit": "cm"
+    },
+    "weight": 15,
+    "weightUnit": "kg",
+    "material": "Leatherette",
+    "color": "MERRY 738",
+    "warranty": "1 year Manufacturing Warranty",
+    "isActive": true,
+    "specifications": [
+      {
+        "key": "Frame Material",
+        "value": "Teak wood"
+      },
+      {
+        "key": "Upholstery Material",
+        "value": "High quality Fabric"
+      },
+      {
+        "key": "Foam",
+        "value": "Duroflex"
+      },
+      {
+        "key": "Back Rest",
+        "value": "Low back"
+      },
+      {
+        "key": "Delivery Condition",
+        "value": "Pre-Assembled"
+      }
+    ],
+    "deliveryCondition": "Pre-Assembled",
+    "policies": {
+      "shipping": "Directly from Factory/Warehouse, Delivered in multiple boxes",
+      "warranty": "1 year Manufacturing Warranty",
+      "cancellations": "Cancellations are allowed free of charge only within first 24 hours of placing the order"
+    },
+    "createdAt": "",
+    "updatedAt": ""
+  },
+  {
+    "name": "Lounge Chair - KEIBA 901 (Metal Frame)",
+    "description": "Lounge Chair with Metal frame and Polyester Fabric upholstery. Low back design with Duroflex foam. Cushions not included.",
+    "price": 19985,
+    "category": "Lounge chair",
+    "image": "",
+    "images": [],
+    "tag": null,
+    "rating": 0,
+    "reviews": 0,
+    "features": [
+      "Low Back Design",
+      "Duroflex Foam",
+      "Pre-Assembled Delivery"
+    ],
+    "inStock": true,
+    "stockQuantity": 10,
+    "sku": "LC-005",
+    "dimensions": {
+      "length": 30,
+      "width": 34,
+      "height": 35,
+      "unit": "cm"
+    },
+    "weight": 15,
+    "weightUnit": "kg",
+    "material": "Polyester Fabric",
+    "color": "KEIBA 901",
+    "warranty": "1 year Manufacturing Warranty",
+    "isActive": true,
+    "specifications": [
+      {
+        "key": "Frame Material",
+        "value": "Metal"
+      },
+      {
+        "key": "Upholstery Material",
+        "value": "High quality Fabric"
+      },
+      {
+        "key": "Foam",
+        "value": "Duroflex"
+      },
+      {
+        "key": "Back Rest",
+        "value": "Low back"
+      },
+      {
+        "key": "Delivery Condition",
+        "value": "Pre-Assembled"
+      }
+    ],
+    "deliveryCondition": "Pre-Assembled",
+    "policies": {
+      "shipping": "Directly from Factory/Warehouse, Delivered in multiple boxes",
+      "warranty": "1 year Manufacturing Warranty",
+      "cancellations": "Cancellations are allowed free of charge only within first 24 hours of placing the order"
+    },
+    "createdAt": "",
+    "updatedAt": ""
+  },
+  {
+    "name": "Lounge Chair - KEIBA 901 (Teak wood Frame)",
+    "description": "Lounge Chair with Teak wood frame and Polyester Fabric upholstery. Low back design with Duroflex foam. Cushions not included.",
+    "price": 19985,
+    "category": "Lounge chair",
+    "image": "",
+    "images": [],
+    "tag": null,
+    "rating": 0,
+    "reviews": 0,
+    "features": [
+      "Low Back Design",
+      "Duroflex Foam",
+      "Pre-Assembled Delivery"
+    ],
+    "inStock": true,
+    "stockQuantity": 10,
+    "sku": "LC-006",
+    "dimensions": {
+      "length": 30,
+      "width": 34,
+      "height": 35,
+      "unit": "cm"
+    },
+    "weight": 15,
+    "weightUnit": "kg",
+    "material": "Polyester Fabric",
+    "color": "KEIBA 901",
+    "warranty": "1 year Manufacturing Warranty",
+    "isActive": true,
+    "specifications": [
+      {
+        "key": "Frame Material",
+        "value": "Teak wood"
+      },
+      {
+        "key": "Upholstery Material",
+        "value": "High quality Fabric"
+      },
+      {
+        "key": "Foam",
+        "value": "Duroflex"
+      },
+      {
+        "key": "Back Rest",
+        "value": "Low back"
+      },
+      {
+        "key": "Delivery Condition",
+        "value": "Pre-Assembled"
+      }
+    ],
+    "deliveryCondition": "Pre-Assembled",
+    "policies": {
+      "shipping": "Directly from Factory/Warehouse, Delivered in multiple boxes",
+      "warranty": "1 year Manufacturing Warranty",
+      "cancellations": "Cancellations are allowed free of charge only within first 24 hours of placing the order"
+    },
+    "createdAt": "",
+    "updatedAt": ""
+  },
+  {
+    "name": "Lounge Chair - MERRY 703 (Teak wood Frame)",
+    "description": "Lounge Chair with Teak wood frame and Leatherette upholstery. Low back design with Duroflex foam. Cushions not included.",
+    "price": 19985,
+    "category": "Lounge chair",
+    "image": "",
+    "images": [],
+    "tag": null,
+    "rating": 0,
+    "reviews": 0,
+    "features": [
+      "Low Back Design",
+      "Duroflex Foam",
+      "Pre-Assembled Delivery"
+    ],
+    "inStock": true,
+    "stockQuantity": 10,
+    "sku": "LC-007",
+    "dimensions": {
+      "length": 28,
+      "width": 34,
+      "height": 35,
+      "unit": "cm"
+    },
+    "weight": 15,
+    "weightUnit": "kg",
+    "material": "Leatherette",
+    "color": "MERRY 703",
+    "warranty": "1 year Manufacturing Warranty",
+    "isActive": true,
+    "specifications": [
+      {
+        "key": "Frame Material",
+        "value": "Teak wood"
+      },
+      {
+        "key": "Upholstery Material",
+        "value": "High quality Fabric"
+      },
+      {
+        "key": "Foam",
+        "value": "Duroflex"
+      },
+      {
+        "key": "Back Rest",
+        "value": "Low back"
+      },
+      {
+        "key": "Delivery Condition",
+        "value": "Pre-Assembled"
+      }
+    ],
+    "deliveryCondition": "Pre-Assembled",
+    "policies": {
+      "shipping": "Directly from Factory/Warehouse, Delivered in multiple boxes",
+      "warranty": "1 year Manufacturing Warranty",
+      "cancellations": "Cancellations are allowed free of charge only within first 24 hours of placing the order"
+    },
+    "createdAt": "",
+    "updatedAt": ""
+  },
+  {
+    "name": "Lounge Chair - Velveto 971 (Metal Frame)",
+    "description": "Lounge Chair with Metal frame and Velvet upholstery. Low back design with Duroflex foam. Cushions not included.",
+    "price": 19985,
+    "category": "Lounge chair",
+    "image": "",
+    "images": [],
+    "tag": null,
+    "rating": 0,
+    "reviews": 0,
+    "features": [
+      "Low Back Design",
+      "Duroflex Foam",
+      "Pre-Assembled Delivery"
+    ],
+    "inStock": true,
+    "stockQuantity": 10,
+    "sku": "LC-008",
+    "dimensions": {
+      "length": 30,
+      "width": 34,
+      "height": 35,
+      "unit": "cm"
+    },
+    "weight": 15,
+    "weightUnit": "kg",
+    "material": "Velvet",
+    "color": "Velveto 971",
+    "warranty": "1 year Manufacturing Warranty",
+    "isActive": true,
+    "specifications": [
+      {
+        "key": "Frame Material",
+        "value": "Metal"
+      },
+      {
+        "key": "Upholstery Material",
+        "value": "High quality Fabric"
+      },
+      {
+        "key": "Foam",
+        "value": "Duroflex"
+      },
+      {
+        "key": "Back Rest",
+        "value": "Low back"
+      },
+      {
+        "key": "Delivery Condition",
+        "value": "Pre-Assembled"
+      }
+    ],
+    "deliveryCondition": "Pre-Assembled",
+    "policies": {
+      "shipping": "Directly from Factory/Warehouse, Delivered in multiple boxes",
+      "warranty": "1 year Manufacturing Warranty",
+      "cancellations": "Cancellations are allowed free of charge only within first 24 hours of placing the order"
+    },
+    "createdAt": "",
+    "updatedAt": ""
+  },
+  {
+    "name": "Lounge Chair - MERRY 738 (Metal Frame)",
+    "description": "Lounge Chair with Metal frame and Leatherette upholstery. Low back design with Duroflex foam. Cushions not included.",
+    "price": 19985,
+    "category": "Lounge chair",
+    "image": "",
+    "images": [],
+    "tag": null,
+    "rating": 0,
+    "reviews": 0,
+    "features": [
+      "Low Back Design",
+      "Duroflex Foam",
+      "Pre-Assembled Delivery"
+    ],
+    "inStock": true,
+    "stockQuantity": 10,
+    "sku": "LC-009",
+    "dimensions": {
+      "length": 30,
+      "width": 34,
+      "height": 35,
+      "unit": "cm"
+    },
+    "weight": 15,
+    "weightUnit": "kg",
+    "material": "Leatherette",
+    "color": "MERRY 738",
+    "warranty": "1 year Manufacturing Warranty",
+    "isActive": true,
+    "specifications": [
+      {
+        "key": "Frame Material",
+        "value": "Metal"
+      },
+      {
+        "key": "Upholstery Material",
+        "value": "High quality Fabric"
+      },
+      {
+        "key": "Foam",
+        "value": "Duroflex"
+      },
+      {
+        "key": "Back Rest",
+        "value": "Low back"
+      },
+      {
+        "key": "Delivery Condition",
+        "value": "Pre-Assembled"
+      }
+    ],
+    "deliveryCondition": "Pre-Assembled",
+    "policies": {
+      "shipping": "Directly from Factory/Warehouse, Delivered in multiple boxes",
+      "warranty": "1 year Manufacturing Warranty",
+      "cancellations": "Cancellations are allowed free of charge only within first 24 hours of placing the order"
+    },
+    "createdAt": "",
+    "updatedAt": ""
+  },
+  {
+    "name": "Lounge Chair - ABOONE 119 (Teak wood Frame)",
+    "description": "Lounge Chair with Teak wood frame and Leatherette upholstery. Low back design with Duroflex foam. Cushions not included.",
+    "price": 19985,
+    "category": "Lounge chair",
+    "image": "",
+    "images": [],
+    "tag": null,
+    "rating": 0,
+    "reviews": 0,
+    "features": [
+      "Low Back Design",
+      "Duroflex Foam",
+      "Pre-Assembled Delivery"
+    ],
+    "inStock": true,
+    "stockQuantity": 10,
+    "sku": "LC-010",
+    "dimensions": {
+      "length": 30,
+      "width": 34,
+      "height": 35,
+      "unit": "cm"
+    },
+    "weight": 15,
+    "weightUnit": "kg",
+    "material": "Leatherette",
+    "color": "ABOONE 119",
+    "warranty": "1 year Manufacturing Warranty",
+    "isActive": true,
+    "specifications": [
+      {
+        "key": "Frame Material",
+        "value": "Teak wood"
+      },
+      {
+        "key": "Upholstery Material",
+        "value": "High quality Fabric"
+      },
+      {
+        "key": "Foam",
+        "value": "Duroflex"
+      },
+      {
+        "key": "Back Rest",
+        "value": "Low back"
+      },
+      {
+        "key": "Delivery Condition",
+        "value": "Pre-Assembled"
+      }
+    ],
+    "deliveryCondition": "Pre-Assembled",
+    "policies": {
+      "shipping": "Directly from Factory/Warehouse, Delivered in multiple boxes",
+      "warranty": "1 year Manufacturing Warranty",
+      "cancellations": "Cancellations are allowed free of charge only within first 24 hours of placing the order"
+    },
+    "createdAt": "",
+    "updatedAt": ""
+  },
+  {
+    "name": "Lounge Chair - MERRY 714 (Metal Frame)",
+    "description": "Lounge Chair with Metal frame and Leatherette upholstery. Low back design with Duroflex foam. Cushions not included.",
+    "price": 19985,
+    "category": "Lounge chair",
+    "image": "",
+    "images": [],
+    "tag": null,
+    "rating": 0,
+    "reviews": 0,
+    "features": [
+      "Low Back Design",
+      "Duroflex Foam",
+      "Pre-Assembled Delivery"
+    ],
+    "inStock": true,
+    "stockQuantity": 10,
+    "sku": "LC-011",
+    "dimensions": {
+      "length": 30,
+      "width": 34,
+      "height": 35,
+      "unit": "cm"
+    },
+    "weight": 15,
+    "weightUnit": "kg",
+    "material": "Leatherette",
+    "color": "MERRY 714",
+    "warranty": "1 year Manufacturing Warranty",
+    "isActive": true,
+    "specifications": [
+      {
+        "key": "Frame Material",
+        "value": "Metal"
+      },
+      {
+        "key": "Upholstery Material",
+        "value": "High quality Fabric"
+      },
+      {
+        "key": "Foam",
+        "value": "Duroflex"
+      },
+      {
+        "key": "Back Rest",
+        "value": "Low back"
+      },
+      {
+        "key": "Delivery Condition",
+        "value": "Pre-Assembled"
+      }
+    ],
+    "deliveryCondition": "Pre-Assembled",
+    "policies": {
+      "shipping": "Directly from Factory/Warehouse, Delivered in multiple boxes",
+      "warranty": "1 year Manufacturing Warranty",
+      "cancellations": "Cancellations are allowed free of charge only within first 24 hours of placing the order"
+    },
+    "createdAt": "",
+    "updatedAt": ""
+  },
+  {
+    "name": "Lounge Chair - MERRY 738 (Teak wood Frame)",
+    "description": "Lounge Chair with Teak wood frame and Leatherette upholstery. Low back design with Duroflex foam. Cushions not included.",
+    "price": 19985,
+    "category": "Lounge chair",
+    "image": "",
+    "images": [],
+    "tag": null,
+    "rating": 0,
+    "reviews": 0,
+    "features": [
+      "Low Back Design",
+      "Duroflex Foam",
+      "Pre-Assembled Delivery"
+    ],
+    "inStock": true,
+    "stockQuantity": 10,
+    "sku": "LC-012",
+    "dimensions": {
+      "length": 30,
+      "width": 34,
+      "height": 35,
+      "unit": "cm"
+    },
+    "weight": 15,
+    "weightUnit": "kg",
+    "material": "Leatherette",
+    "color": "MERRY 738",
+    "warranty": "1 year Manufacturing Warranty",
+    "isActive": true,
+    "specifications": [
+      {
+        "key": "Frame Material",
+        "value": "Teak wood"
+      },
+      {
+        "key": "Upholstery Material",
+        "value": "High quality Fabric"
+      },
+      {
+        "key": "Foam",
+        "value": "Duroflex"
+      },
+      {
+        "key": "Back Rest",
+        "value": "Low back"
+      },
+      {
+        "key": "Delivery Condition",
+        "value": "Pre-Assembled"
+      }
+    ],
+    "deliveryCondition": "Pre-Assembled",
+    "policies": {
+      "shipping": "Directly from Factory/Warehouse, Delivered in multiple boxes",
+      "warranty": "1 year Manufacturing Warranty",
+      "cancellations": "Cancellations are allowed free of charge only within first 24 hours of placing the order"
+    },
+    "createdAt": "",
+    "updatedAt": ""
+  },
+  {
+    "name": "Lounge Chair - MERRY 734 (Teak wood Frame)",
+    "description": "Lounge Chair with Teak wood frame and Leatherette upholstery. Low back design with Duroflex foam. Cushions not included.",
+    "price": 19985,
+    "category": "Lounge chair",
+    "image": "",
+    "images": [],
+    "tag": null,
+    "rating": 0,
+    "reviews": 0,
+    "features": [
+      "Low Back Design",
+      "Duroflex Foam",
+      "Pre-Assembled Delivery"
+    ],
+    "inStock": true,
+    "stockQuantity": 10,
+    "sku": "LC-013",
+    "dimensions": {
+      "length": 30,
+      "width": 34,
+      "height": 35,
+      "unit": "cm"
+    },
+    "weight": 15,
+    "weightUnit": "kg",
+    "material": "Leatherette",
+    "color": "MERRY 734",
+    "warranty": "1 year Manufacturing Warranty",
+    "isActive": true,
+    "specifications": [
+      {
+        "key": "Frame Material",
+        "value": "Teak wood"
+      },
+      {
+        "key": "Upholstery Material",
+        "value": "High quality Fabric"
+      },
+      {
+        "key": "Foam",
+        "value": "Duroflex"
+      },
+      {
+        "key": "Back Rest",
+        "value": "Low back"
+      },
+      {
+        "key": "Delivery Condition",
+        "value": "Pre-Assembled"
+      }
+    ],
+    "deliveryCondition": "Pre-Assembled",
+    "policies": {
+      "shipping": "Directly from Factory/Warehouse, Delivered in multiple boxes",
+      "warranty": "1 year Manufacturing Warranty",
+      "cancellations": "Cancellations are allowed free of charge only within first 24 hours of placing the order"
+    },
+    "createdAt": "",
+    "updatedAt": ""
+  },
+  {
+    "name": "Lounge Chair - ABOONE 119 (Metal Frame)",
+    "description": "Lounge Chair with Metal frame and Leatherette upholstery. Low back design with Duroflex foam. Cushions not included.",
+    "price": 19985,
+    "category": "Lounge chair",
+    "image": "",
+    "images": [],
+    "tag": null,
+    "rating": 0,
+    "reviews": 0,
+    "features": [
+      "Low Back Design",
+      "Duroflex Foam",
+      "Pre-Assembled Delivery"
+    ],
+    "inStock": true,
+    "stockQuantity": 10,
+    "sku": "LC-014",
+    "dimensions": {
+      "length": 30,
+      "width": 34,
+      "height": 35,
+      "unit": "cm"
+    },
+    "weight": 15,
+    "weightUnit": "kg",
+    "material": "Leatherette",
+    "color": "ABOONE 119",
+    "warranty": "1 year Manufacturing Warranty",
+    "isActive": true,
+    "specifications": [
+      {
+        "key": "Frame Material",
+        "value": "Metal"
+      },
+      {
+        "key": "Upholstery Material",
+        "value": "High quality Fabric"
+      },
+      {
+        "key": "Foam",
+        "value": "Duroflex"
+      },
+      {
+        "key": "Back Rest",
+        "value": "Low back"
+      },
+      {
+        "key": "Delivery Condition",
+        "value": "Pre-Assembled"
+      }
+    ],
+    "deliveryCondition": "Pre-Assembled",
+    "policies": {
+      "shipping": "Directly from Factory/Warehouse, Delivered in multiple boxes",
+      "warranty": "1 year Manufacturing Warranty",
+      "cancellations": "Cancellations are allowed free of charge only within first 24 hours of placing the order"
+    },
+    "createdAt": "",
+    "updatedAt": ""
+  },
+  {
+    "name": "Lounge Chair - KEIBA 903 (Teak wood Frame)",
+    "description": "Lounge Chair with Teak wood frame and Material upholstery. Low back design with Duroflex foam. Cushions not included.",
+    "price": 19985,
+    "category": "Lounge chair",
+    "image": "",
+    "images": [],
+    "tag": null,
+    "rating": 0,
+    "reviews": 0,
+    "features": [
+      "Low Back Design",
+      "Duroflex Foam",
+      "Pre-Assembled Delivery"
+    ],
+    "inStock": true,
+    "stockQuantity": 10,
+    "sku": "LC-015",
+    "dimensions": {
+      "length": 30,
+      "width": 34,
+      "height": 35,
+      "unit": "cm"
+    },
+    "weight": 15,
+    "weightUnit": "kg",
+    "material": "Material",
+    "color": "KEIBA 903",
+    "warranty": "1 year Manufacturing Warranty",
+    "isActive": true,
+    "specifications": [
+      {
+        "key": "Frame Material",
+        "value": "Teak wood"
+      },
+      {
+        "key": "Upholstery Material",
+        "value": "High quality Fabric"
+      },
+      {
+        "key": "Foam",
+        "value": "Duroflex"
+      },
+      {
+        "key": "Back Rest",
+        "value": "Low back"
+      },
+      {
+        "key": "Delivery Condition",
+        "value": "Pre-Assembled"
+      }
+    ],
+    "deliveryCondition": "Pre-Assembled",
+    "policies": {
+      "shipping": "Directly from Factory/Warehouse, Delivered in multiple boxes",
+      "warranty": "1 year Manufacturing Warranty",
+      "cancellations": "Cancellations are allowed free of charge only within first 24 hours of placing the order"
+    },
+    "createdAt": "",
+    "updatedAt": ""
+  },
+  {
+    "name": "Lounge Chair - MERRY 702 & 708 (Metal Frame)",
+    "description": "Lounge Chair with Metal frame and Leatherette upholstery. Low back design with Duroflex foam. Cushions not included.",
+    "price": 19985,
+    "category": "Lounge chair",
+    "image": "",
+    "images": [],
+    "tag": null,
+    "rating": 0,
+    "reviews": 0,
+    "features": [
+      "Low Back Design",
+      "Duroflex Foam",
+      "Pre-Assembled Delivery"
+    ],
+    "inStock": true,
+    "stockQuantity": 10,
+    "sku": "LC-016",
+    "dimensions": {
+      "length": 30,
+      "width": 34,
+      "height": 35,
+      "unit": "cm"
+    },
+    "weight": 15,
+    "weightUnit": "kg",
+    "material": "Leatherette",
+    "color": "MERRY 702 & 708",
+    "warranty": "1 year Manufacturing Warranty",
+    "isActive": true,
+    "specifications": [
+      {
+        "key": "Frame Material",
+        "value": "Metal"
+      },
+      {
+        "key": "Upholstery Material",
+        "value": "High quality Fabric"
+      },
+      {
+        "key": "Foam",
+        "value": "Duroflex"
+      },
+      {
+        "key": "Back Rest",
+        "value": "Low back"
+      },
+      {
+        "key": "Delivery Condition",
+        "value": "Pre-Assembled"
+      }
+    ],
+    "deliveryCondition": "Pre-Assembled",
+    "policies": {
+      "shipping": "Directly from Factory/Warehouse, Delivered in multiple boxes",
+      "warranty": "1 year Manufacturing Warranty",
+      "cancellations": "Cancellations are allowed free of charge only within first 24 hours of placing the order"
+    },
+    "createdAt": "",
+    "updatedAt": ""
+  },
+  {
+    "name": "Lounge Chair - MERRY 723 (Metal Frame)",
+    "description": "Lounge Chair with Metal frame and Leatherette upholstery. Low back design with Duroflex foam. Cushions not included.",
+    "price": 19985,
+    "category": "Lounge chair",
+    "image": "",
+    "images": [],
+    "tag": null,
+    "rating": 0,
+    "reviews": 0,
+    "features": [
+      "Low Back Design",
+      "Duroflex Foam",
+      "Pre-Assembled Delivery"
+    ],
+    "inStock": true,
+    "stockQuantity": 10,
+    "sku": "LC-017",
+    "dimensions": {
+      "length": 30,
+      "width": 34,
+      "height": 35,
+      "unit": "cm"
+    },
+    "weight": 15,
+    "weightUnit": "kg",
+    "material": "Leatherette",
+    "color": "MERRY 723",
+    "warranty": "1 year Manufacturing Warranty",
+    "isActive": true,
+    "specifications": [
+      {
+        "key": "Frame Material",
+        "value": "Metal"
+      },
+      {
+        "key": "Upholstery Material",
+        "value": "High quality Fabric"
+      },
+      {
+        "key": "Foam",
+        "value": "Duroflex"
+      },
+      {
+        "key": "Back Rest",
+        "value": "Low back"
+      },
+      {
+        "key": "Delivery Condition",
+        "value": "Pre-Assembled"
+      }
+    ],
+    "deliveryCondition": "Pre-Assembled",
+    "policies": {
+      "shipping": "Directly from Factory/Warehouse, Delivered in multiple boxes",
+      "warranty": "1 year Manufacturing Warranty",
+      "cancellations": "Cancellations are allowed free of charge only within first 24 hours of placing the order"
+    },
+    "createdAt": "",
+    "updatedAt": ""
+  },
+  {
+    "name": "Lounge Chair - MERRY 739 (Teak wood Frame)",
+    "description": "Lounge Chair with Teak wood frame and Leatherette upholstery. Low back design with Duroflex foam. Cushions not included.",
+    "price": 21000,
+    "category": "Lounge chair",
+    "image": "",
+    "images": [],
+    "tag": null,
+    "rating": 0,
+    "reviews": 0,
+    "features": [
+      "Low Back Design",
+      "Duroflex Foam",
+      "Pre-Assembled Delivery"
+    ],
+    "inStock": true,
+    "stockQuantity": 10,
+    "sku": "LC-018",
+    "dimensions": {
+      "length": 30,
+      "width": 34,
+      "height": 35,
+      "unit": "cm"
+    },
+    "weight": 15,
+    "weightUnit": "kg",
+    "material": "Leatherette",
+    "color": "MERRY 739",
+    "warranty": "1 year Manufacturing Warranty",
+    "isActive": true,
+    "specifications": [
+      {
+        "key": "Frame Material",
+        "value": "Teak wood"
+      },
+      {
+        "key": "Upholstery Material",
+        "value": "High quality Fabric"
+      },
+      {
+        "key": "Foam",
+        "value": "Duroflex"
+      },
+      {
+        "key": "Back Rest",
+        "value": "Low back"
+      },
+      {
+        "key": "Delivery Condition",
+        "value": "Pre-Assembled"
+      }
+    ],
+    "deliveryCondition": "Pre-Assembled",
+    "policies": {
+      "shipping": "Directly from Factory/Warehouse, Delivered in multiple boxes",
+      "warranty": "1 year Manufacturing Warranty",
+      "cancellations": "Cancellations are allowed free of charge only within first 24 hours of placing the order"
+    },
+    "createdAt": "",
+    "updatedAt": ""
+  }
+]

@@ -20,7 +20,8 @@
     "seed:velveto-fabric": "node scripts/seedVelvetoFabric.js",
     "seed:aboone-fabric": "node scripts/seedAbooneFabric.js",
     "seed:amber-fabric": "node scripts/seedAmberFabric.js",
-    "add:beds-headboard": "node scripts/addBedsHeadboardDimensions.js"
+    "add:beds-headboard": "node scripts/addBedsHeadboardDimensions.js",
+    "add:beds-material-spec": "node scripts/addBedsMaterialSpec.js"
   },
   "engines": {
     "node": ">=18"
