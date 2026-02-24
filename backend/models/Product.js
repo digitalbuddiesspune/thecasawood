@@ -96,7 +96,7 @@ const productSchema = new mongoose.Schema({
     height: Number,
     unit: {
       type: String,
-      default: 'cm'
+      default: 'Inch'
     }
   },
   dimensionDetails: [{

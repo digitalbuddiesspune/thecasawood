@@ -284,6 +284,27 @@ const ProductDetail = () => {
         )
     }
 
+    // Parse variant dimensions string e.g. "96 L x 33 W x 18 H" -> { length, width, height }
+    const parseVariantDimensions = (str) => {
+        if (!str || typeof str !== 'string') return null
+        const s = str.trim()
+        const lMatch = s.match(/(\d+(?:\.\d+)?)\s*L/i)
+        const wMatch = s.match(/(\d+(?:\.\d+)?)\s*W/i)
+        const hMatch = s.match(/(\d+(?:\.\d+)?)\s*H/i)
+        const length = lMatch ? lMatch[1] : null
+        const width = wMatch ? wMatch[1] : null
+        const height = hMatch ? hMatch[1] : null
+        if (length || width || height) return { length, width, height }
+        return null
+    }
+
+    const dimUnit = product.dimensions?.unit || 'Inch'
+    const hasProductDimObject = product.dimensions && typeof product.dimensions === 'object' && (product.dimensions.length !== undefined && product.dimensions.length !== '' || product.dimensions.width || product.dimensions.height)
+    const parsedVariantDim = selectedVariant?.dimensions ? parseVariantDimensions(selectedVariant.dimensions) : null
+    const displayDim = hasProductDimObject
+        ? { length: product.dimensions.length, width: product.dimensions.width, height: product.dimensions.height }
+        : parsedVariantDim
+
     // Prepare images (ensure multiple)
     const images = product.images && product.images.length > 0
         ? product.images
@@ -582,7 +603,7 @@ const ProductDetail = () => {
                                     <div className="border border-gray-200 rounded-sm">
                                         <div className="flex flex-col md:grid md:grid-cols-3 border-b border-gray-200 last:border-b-0">
                                             <div className="p-3 text-sm text-gray-500 md:col-span-1">Sales Package</div>
-                                            <div className="p-3 text-sm text-gray-800 md:col-span-2 pt-0 md:pt-3">1 {product.category?.slice(0, -1) || 'Unit'}</div>
+                                            <div className="p-3 text-sm text-gray-800 md:col-span-2 pt-0 md:pt-3">1 {(product.category || 'Unit').replace(/\bchair\b/i, 'Chair')}</div>
                                         </div>
                                         <div className="flex flex-col md:grid md:grid-cols-3 border-b border-gray-200 last:border-b-0">
                                             <div className="p-3 text-sm text-gray-500 md:col-span-1">Model Number</div>
@@ -627,38 +648,26 @@ const ProductDetail = () => {
                                     <div className="mt-4">
                                         <div className="text-sm font-medium text-gray-800 mb-3 uppercase">Product Dimensions</div>
                                         <div className="border border-gray-200 rounded-sm">
-                                            {/* Show Selected Variant Dimensions if available */}
-                                            {selectedVariant?.dimensions && (
-                                                <div className="bg-[#fff8f5] border-b border-[#8b5e3c]/20">
-                                                    <div className="flex flex-col md:grid md:grid-cols-3">
-                                                        <div className="p-3 text-sm font-medium text-[#8b5e3c] md:col-span-1">Selected Configuration</div>
-                                                        <div className="p-3 text-sm font-bold text-[#8b5e3c] md:col-span-2 pt-0 md:pt-3">
-                                                            {selectedVariant.dimensions}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            )}
-
-                                            {/* Main dimensions: Length, Width, Height (shown for Beds and any product with dimensions object) */}
-                                            {product.dimensions && typeof product.dimensions === 'object' && (product.dimensions.length !== undefined && product.dimensions.length !== '' || product.dimensions.width || product.dimensions.height) && (
+                                            {/* Dimensions: Length, Width, Height with unit (from product.dimensions or parsed variant e.g. "96 L x 33 W x 18 H") */}
+                                            {displayDim && (displayDim.length || displayDim.width || displayDim.height) && (
                                                 <div className="border-b border-gray-200">
                                                     <div className="bg-gray-50 px-3 py-2 text-xs font-bold text-gray-500 uppercase tracking-wide border-b border-gray-100">Dimensions</div>
-                                                    {product.dimensions.length !== undefined && product.dimensions.length !== '' && (
+                                                    {displayDim.length !== undefined && displayDim.length !== null && displayDim.length !== '' && (
                                                         <div className="flex flex-col md:grid md:grid-cols-3 border-b border-gray-100 last:border-b-0">
                                                             <div className="p-3 text-sm text-gray-500 md:col-span-1">Length</div>
-                                                            <div className="p-3 text-sm text-gray-800 md:col-span-2 pt-0 md:pt-3">{product.dimensions.length} {product.dimensions.unit || 'cm'}</div>
+                                                            <div className="p-3 text-sm text-gray-800 md:col-span-2 pt-0 md:pt-3">{displayDim.length} {dimUnit}</div>
                                                         </div>
                                                     )}
-                                                    {product.dimensions.width && (
+                                                    {displayDim.width !== undefined && displayDim.width !== null && displayDim.width !== '' && (
                                                         <div className="flex flex-col md:grid md:grid-cols-3 border-b border-gray-100 last:border-b-0">
                                                             <div className="p-3 text-sm text-gray-500 md:col-span-1">Width</div>
-                                                            <div className="p-3 text-sm text-gray-800 md:col-span-2 pt-0 md:pt-3">{product.dimensions.width} {product.dimensions.unit || 'cm'}</div>
+                                                            <div className="p-3 text-sm text-gray-800 md:col-span-2 pt-0 md:pt-3">{displayDim.width} {dimUnit}</div>
                                                         </div>
                                                     )}
-                                                    {product.dimensions.height && (
+                                                    {displayDim.height !== undefined && displayDim.height !== null && displayDim.height !== '' && (
                                                         <div className="flex flex-col md:grid md:grid-cols-3 border-b border-gray-100 last:border-b-0">
                                                             <div className="p-3 text-sm text-gray-500 md:col-span-1">Height</div>
-                                                            <div className="p-3 text-sm text-gray-800 md:col-span-2 pt-0 md:pt-3">{product.dimensions.height} {product.dimensions.unit || 'cm'}</div>
+                                                            <div className="p-3 text-sm text-gray-800 md:col-span-2 pt-0 md:pt-3">{displayDim.height} {dimUnit}</div>
                                                         </div>
                                                     )}
                                                 </div>
@@ -711,19 +720,19 @@ const ProductDetail = () => {
                                                         {product.dimensions && (product.dimensions.length !== undefined && product.dimensions.length !== '') && (
                                                             <div className="flex flex-col md:grid md:grid-cols-3 border-b border-gray-200 last:border-b-0">
                                                                 <div className="p-3 text-sm text-gray-500 md:col-span-1">Length</div>
-                                                                <div className="p-3 text-sm text-gray-800 md:col-span-2 pt-0 md:pt-3">{product.dimensions.length} {product.dimensions.unit || 'cm'}</div>
+                                                                <div className="p-3 text-sm text-gray-800 md:col-span-2 pt-0 md:pt-3">{product.dimensions.length} {product.dimensions.unit || 'Inch'}</div>
                                                             </div>
                                                         )}
                                                         {product.dimensions.width && (
                                                             <div className="flex flex-col md:grid md:grid-cols-3 border-b border-gray-200 last:border-b-0">
                                                                 <div className="p-3 text-sm text-gray-500 md:col-span-1">Width</div>
-                                                                <div className="p-3 text-sm text-gray-800 md:col-span-2 pt-0 md:pt-3">{product.dimensions.width} {product.dimensions.unit || 'cm'}</div>
+                                                                <div className="p-3 text-sm text-gray-800 md:col-span-2 pt-0 md:pt-3">{product.dimensions.width} {product.dimensions.unit || 'Inch'}</div>
                                                             </div>
                                                         )}
                                                         {product.dimensions.height && (
                                                             <div className="flex flex-col md:grid md:grid-cols-3 border-b border-gray-200 last:border-b-0">
                                                                 <div className="p-3 text-sm text-gray-500 md:col-span-1">Height</div>
-                                                                <div className="p-3 text-sm text-gray-800 md:col-span-2 pt-0 md:pt-3">{product.dimensions.height} {product.dimensions.unit || 'cm'}</div>
+                                                                <div className="p-3 text-sm text-gray-800 md:col-span-2 pt-0 md:pt-3">{product.dimensions.height} {product.dimensions.unit || 'Inch'}</div>
                                                             </div>
                                                         )}
                                                     </>
