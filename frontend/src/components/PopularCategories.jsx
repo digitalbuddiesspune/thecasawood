@@ -33,6 +33,12 @@ const PopularCategories = () => {
             image: 'https://res.cloudinary.com/dfl303eq8/image/upload/v1769672487/image8_zbqoxx.jpg',
             link: 'Lounge chair'
         },
+        {
+            id: 6,
+            title: 'Wardrobe',
+            image: 'https://res.cloudinary.com/dfl303eq8/image/upload/v1771503194/image23_klf1kl.jpg',
+            link: 'Wardrobe'
+        },
     ];
 
     return (
@@ -47,7 +53,7 @@ const PopularCategories = () => {
                 </div>
 
                 {/* Categories Grid */}
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6 lg:gap-8 justify-items-center">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6 lg:gap-8 justify-items-center">
                     {categories.map((category) => (
                         <Link
                             to={`/products?category=${encodeURIComponent(category.link)}`}
